@@ -22,6 +22,7 @@
             border-collapse: collapse; /* Penting untuk border */
             border-spacing: 0;
             background-color: #fff;
+            table-layout: fixed;
         }
 
         /* Header (Thead) - bg-gray-50 */
@@ -36,6 +37,9 @@
             text-align: left;
             border-bottom: 1px solid #e5e7eb; /* divide-gray-200 */
             border-top: 1px solid #e5e7eb;
+            overflow: hidden; 
+            white-space: nowrap; 
+            text-overflow: ellipsis;
         }
 
         /* Body (Tbody) */
@@ -45,6 +49,9 @@
             vertical-align: top;
             font-size: 11px; /* text-sm */
             color: #4b5563; /* text-gray-600 */
+            word-wrap: break-word;       /* Standar lama */
+            overflow-wrap: break-word;   /* Standar baru */
+            word-break: break-word;
         }
 
         /* Alternating Rows (Opsional, biar lebih mudah dibaca) */
