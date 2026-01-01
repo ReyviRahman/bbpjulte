@@ -1,0 +1,30 @@
+alur status
+petugas ult memeriksa kelengkapan dokumen permintaan layanan (status baru "verifikasi awal")
+dari petugas ult> persuratan >  menu dropdown hanya persuratan) berarti ada akun role user persuratan " Petugas ult meneruskan surat permohonan ke persuratan"
+verifikasi memasukan ke sinde tugasnya meng update status ketika surat sudah di unggah ke sinde
+tugas persuratan ke pimpinan (kepala) " Bagian Persuratan telah meneruskan ke pimpinan"
+butuh akun pimpinan (pimpinan harus megupdate status manual) kepala  "Surat permohonan sudah di disposisi"
+disposisi pimpinan (disetujui/ditolak) " ketika disetujui", " alurnya disposisi ke pegawai terkait "radio button pegawai terkait"
+                                        "  dan kasubag"
+                                        " ketika ditolak", "keterangan kondisional"
+
+
+kasubag meneruskan kepersuratan, untuk dibuatkan surat tugas
+
+persuratan radio button list pegawai yang ditunjuk(disposisi) oleh kepala
+
+pegawai yang di tunjuk menyelesaikan dan megupdate status permohonan "permohonan layanan telah diselesaikan oleh pegawai"
+
+tambahkan faq interaktif (?)di pengisian form
+
+Ketika mau mengunduh dokumen hasil layanan harus menengisi skm.
+
+pengisian ulasan / rating
+
+
+
+
+
+
+
+

@@ -1,0 +1,201 @@
+/* PEMBARUAN: Palet warna yang lebih kaya dan profesional */
+:root {
+    --primary-color: #0d47a1;  /* Biru tua yang lebih dalam */
+    --secondary-color: #1976d2; /* Biru yang lebih cerah untuk aksen */
+    --border-color: #cfd8dc;    /* Abu-abu kebiruan yang lembut */
+    --background-color: #eceff1; /* Latar belakang sedikit off-white */
+    --subtle-bg-color: #f4f8fa; /* Latar belakang untuk elemen seperti input file */
+    --text-color: #37474f;      /* Abu-abu tua untuk teks */
+    --label-color: #263238;     /* Hitam lembut untuk label */
+    --success-color: #2e7d32;   /* Hijau untuk pesan sukses (jika ada) */
+    --danger-color: #c62828;    /* Merah untuk error */
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+.container {
+    max-width: 980px;
+    margin: 2em auto;
+    padding: 2.5em; /* Padding lebih besar */
+    background-color: #fff;
+    border-radius: 12px; /* Sudut lebih tumpul */
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+}
+.form-header {
+    text-align: left;
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+}
+.form-header h2 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.8rem;
+}
+/* --- 1. CONTAINER GRID --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 100%; 
+    gap: 1.5em;
+}
+
+/* --- 4. MEDIA QUERY (DESKTOP) --- */
+@media (min-width: 768px) {
+    .form-grid {
+        /* Kembali ke 2 kolom yang proporsional */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 1.5em 2em;
+        align-items: start; /* Biar kalau ada error message panjang, sebelahnya gak ikut melar */
+    }
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+.form-group + .form-group {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5em;
+}
+.form-group label {
+    font-weight: 600;
+    color: var(--label-color);
+    margin-bottom: 0.75em; /* Jarak lebih besar */
+    font-size: 0.95rem;
+}
+.form-input, textarea {
+    width: 100%;
+    padding: 0.8em 1em;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #fff;
+}
+.form-input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.25);
+}
+/* PEMBARUAN: Aksen warna pada input file */
+input[type="file"].form-input {
+    background-color: var(--subtle-bg-color);
+    padding: 0.5em;
+}
+input[type="file"]::file-selector-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.6em 1em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-right: 1em;
+}
+ input[type="file"]::file-selector-button:hover {
+    background-color: var(--secondary-color);
+ }
+.radio-horizontal-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1em 1.5em;
+    padding-top: 0.5em;
+}
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.radio-item label {
+    font-weight: normal;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+.radio-item input[type="radio"] {
+    width: 1.1em;
+    height: 1.1em;
+    cursor: pointer;
+    accent-color: var(--primary-color); /* Memberi warna pada bulatan radio */
+}
+.radio-grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+}
+
+.radio-grid-4-col {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* jadi 4 kolom */
+    gap: 1em;
+}
+
+@media (max-width: 576px) {
+    .radio-grid-2-col {
+        grid-template-columns: 1fr;
+    }
+}
+.lainnya-input-wrapper {
+    margin-top: 1em;
+}
+.submit-button {
+    padding: 0.8em 1.5em;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 300px;
+    align-self: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(1, 4, 8, 0.2);
+}
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(1, 5, 10, 0.3);
+}
+.error-message { color: var(--danger-color); font-size: 0.9em; margin-top: 0.4em; }
+.form-group.no-top-border {
+    border-top: none;
+    padding-top: 0;
+}
+.sub-layanan {
+    margin-top: 1.5em;
+    padding-top: 1.5em;
+    border-top: 2px dashed var(--border-color);
+}
+.kategori-layanan {
+    margin-top: 0;
+    margin-bottom: 1em;
+    color: var(--primary-color);
+}
+@media (max-width: 400px) {
+    .form-container {
+        /* Perkecil padding untuk layar HP */
+        padding: 1.5em 1em;
+    }
+}
+
+/* Tambahkan di akhir file app-layout.css */
+@media (max-width: 400px) {
+    .main-content {
+        /* Perkecil padding utama di layar HP */
+        padding: 1em;
+    }
+
+    .main-header {
+        /* Perkecil juga padding header agar lebih pas */
+        padding: 0 1em;
+    }
+}

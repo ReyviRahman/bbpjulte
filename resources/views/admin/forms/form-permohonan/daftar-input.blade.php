@@ -1,0 +1,189 @@
+@extends('layouts.admin')
+
+@section('title', 'Manajemen Formulir')
+@section('header-title', 'Manajemen Formulir')
+
+@push('styles')
+    <style>
+        /* Sedikit style tambahan untuk badge peran */
+        .role-badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-admin {
+            background-color: #fecaca;
+            /* red-200 */
+            color: #991b1b;
+            /* red-800 */
+        }
+
+        .dark .role-admin {
+            background-color: #7f1d1d;
+            /* red-900 */
+            color: #fca5a5;
+            /* red-400 */
+        }
+
+        .role-petugas {
+            background-color: #dbeafe;
+            /* blue-100 */
+            color: #1e40af;
+            /* blue-800 */
+        }
+
+        .dark .role-petugas {
+            background-color: #1e3a8a;
+            /* blue-900 */
+            color: #93c5fd;
+            /* blue-300 */
+        }
+    </style>
+@endpush
+
+@section('content')
+
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
+        <div class="p-6 text-gray-900 dark:text-gray-100">
+            {{-- Header --}}
+            <div class="flex items-center gap-1 mb-6">
+                <a href="{{ route('admin.forms.daftar-input') }}"
+                    class="inline-flex items-center px-1 py-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </a>
+                <h2 class="text-lg font-semibold">Daftar Input Formulir Permohonan</h2>
+            </div>
+            {{-- Notifikasi --}}
+            @if (session('success') || session('error'))
+                <div class="mb-6">
+                    @if (session('success'))
+                        <div class="bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4"
+                            role="alert">
+                            <p class="font-bold">Sukses</p>
+                            <p>{{ session('success') }}</p>
+                    </div> @endif
+                    @if (session('error'))
+                        <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4"
+                            role="alert">
+                            <p class="font-bold">Error</p>
+                            <p>{{ session('error') }}</p>
+                    </div> @endif
+                </div>
+            @endif
+
+            <div class="overflow-x-auto">
+                <table
+                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50">
+                        <tr>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                style="width: 5%;">No.</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
+                                Input</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        @php
+                            // Kita definisikan semua field di sini agar kodingan HTML di bawah lebih bersih
+                            $allFields = [
+                                // --- BAGIAN 1: INPUTAN YANG BISA DIKELOLA (Ada tombol aksi) ---
+                                ['name' => 'Nama lengkap', 'type' => 'system'],
+                                ['name' => 'Instansi/Lembaga/Komunitas', 'type' => 'system'],
+                                ['name' => 'Pos-el (E-mail)', 'type' => 'system'],
+                                ['name' => 'Nomor ponsel/WA', 'type' => 'system'],
+                                [
+                                    'name' => 'Jenis Kelamin',
+                                    'type' => 'editable',
+                                    'category_key' => 'Jenis Kelamin'
+                                ],
+                                [
+                                    'name' => 'Pendidikan Terakhir',
+                                    'type' => 'editable',
+                                    'category_key' => 'Pendidikan Terakhir'
+                                ],
+                                [
+                                    'name' => 'Profesi',
+                                    'type' => 'editable',
+                                    'category_key' => 'Profesi'
+                                ],
+                                [
+                                    'name' => 'Layanan yang dibutuhkan',
+                                    'type' => 'editable',
+                                    'category_key' => 'Layanan'
+                                ],
+                                ['name' => 'Isi permohonan layanan Anda', 'type' => 'system'],
+
+                                [
+                                    'name' => 'Unggah surat permohonan',
+                                    'type' => 'editable',
+                                    'category_key' => 'Unggah surat permohonan'
+                                ],
+                                [
+                                    'name' => 'Unggah lampiran permohonan',
+                                    'type' => 'editable',
+                                    'category_key' => 'Unggah lampiran permohonan'
+                                ],
+
+                                // --- BAGIAN 2: INPUTAN SYSTEM (Tidak bisa diubah) ---
+                                
+                            ];
+                        @endphp
+
+                        {{-- Loop Array di atas --}}
+                        @foreach($allFields as $index => $field)
+                            <tr class="table-hover-row">
+                                {{-- Kolom No --}}
+                                <td class="px-4 py-4 text-center text-sm text-gray-500">
+                                    {{ $index + 1 }}
+                                </td>
+
+                                {{-- Kolom Nama Input --}}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        {{ $field['name'] }}
+                                    </div>
+                                </td>
+
+                                {{-- Kolom Aksi --}}
+                                <td class="px-6 py-4 flex justify-center whitespace-nowrap text-center text-sm font-medium">
+
+                                    {{-- LOGIKA: Jika tipe editable, munculkan tombol. Jika system, munculkan teks --}}
+                                    @if($field['type'] === 'editable')
+                                        <div class="">
+                                            <a href="{{ route('admin.form-permohonan.index', ['category' => $field['category_key']]) }}"
+                                                class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 action-btn"
+                                                title="Kelola Data">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                                                    fill="blue">
+                                                    <path
+                                                        d="M10 3a1 1 0 00-1 1v7H3a1 1 0 000 2h6v7a1 1 0 002 0v-7h6a1 1 0 100-2h-6V4a1 1 0 00-1-1z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    @else
+                                        {{-- Tampilan untuk inputan System --}}
+                                        <span
+                                            class="text-xs text-gray-400 italic bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded cursor-not-allowed">
+                                            dikelola oleh pengelola sistem
+                                        </span>
+                                    @endif
+
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+@endsection
