@@ -7,6 +7,7 @@ use App\Models\FormSkm;
 use App\Models\Permohonan;
 use App\Models\Skm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class SkmController extends Controller
 {
@@ -36,47 +37,47 @@ class SkmController extends Controller
         $opsiUSatu = FormSkm::where('category', 'Syarat pengurusan pelayanan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
-            
+            ->toArray();
+
         $opsiUDua = FormSkm::where('category', 'Sistem Mekanisme Dan Prosedur Pelayanan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiUTiga = FormSkm::where('category', 'Waktu Penyelesaian Pelayanan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiUEmpat = FormSkm::where('category', 'Kesesuaian Biaya Pelayanan Dengan yang Diinformasikan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiULima = FormSkm::where('category', 'Kesesuaian Hasil Pelayanan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiUEnam = FormSkm::where('category', 'Kemampuan Petugas Dalam Memberikan Pelayanan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiUTujuh = FormSkm::where('category', 'Kesopanan Dan Keramahan Petugas')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiUDelapan = FormSkm::where('category', 'Penanganan Pengaduan Saran Dan Masukan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
         $opsiUSembilan = FormSkm::where('category', 'Sarana Dan Prasarana Penunjang Pelayanan')
             ->orderBy('score', 'desc')
             ->pluck('name', 'score')
-            ->toArray(); 
+            ->toArray();
 
 
         // 4. Ambil Opsi Lainnya
@@ -114,10 +115,20 @@ class SkmController extends Controller
             'jenis_pungutan' => 'nullable',
             'akan_informasikan_layanan' => 'required',
             'kritik_saran' => 'required',
-            'captcha' => 'required|captcha',
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => env('RECAPTCHA_SECRET_KEY'),
+                    'response' => $value,
+                    'remoteip' => request()->ip(),
+                ]);
+
+                // Jika Google bilang "False" (gagal), maka tampilkan error
+                if (!$gResponse->json('success')) {
+                    $fail('Verifikasi robot gagal, silakan coba lagi.');
+                }
+            }]
         ], [
-            'captcha.required' => 'Kode keamanan wajib diisi.',
-            'captcha.captcha' => 'Kode keamanan salah, silakan coba lagi.',
+            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
         ]);
 
 

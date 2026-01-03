@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="{{ asset('css/app-layout.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     @push('styles')
         {{-- CSS UNTUK DROPDOWN MENU --}}
@@ -173,9 +174,9 @@
         <div class="header-container">
             <div class="logo">
                 <a href="{{ route('beranda') }}">
-                    <img src="https://balaibahasajambi.kemendikdasmen.go.id/wp-content/uploads/2024/12/LOGO-BALAI-1-e1734681386289.png"
+                    <img src="{{ asset('images/LOGO-BALAI.png') }}"
                         alt="Logo BBP Jambi"
-                        onerror="this.onerror=null;this.src='https://placehold.co/200x50/0056b3/FFFFFF?text=Logo+BBPJ';">
+                        onerror="this.onerror=null;this.src='https://placehold.co/200x50/0056b3/FFFFFF?text=ULTEBBPJ';">
                     <span>
 
                     </span>

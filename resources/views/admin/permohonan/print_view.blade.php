@@ -96,15 +96,16 @@
     <table>
     <thead>
         <tr>
-            <th style="width: 3%;">No.</th>
-            <th style="width: 10%;">No. Registrasi</th> <th style="width: 10%;">Tanggal</th>
+            <th style="width: 5%;">No.</th>
+            <th style="width: 12%;">No. Registrasi</th> 
+            <th style="width: 8%;">Tanggal</th>
             <th style="width: 14%;">Nama Pemohon</th>
             <th style="width: 10%;">Instansi</th>
             <th style="width: 13%;">Email & Ponsel</th>
             <th style="width: 10%;">Layanan</th>
             <th style="width: 15%;">Isi Permohonan</th>
-            <th style="width: 8%;">Berkas</th>
-            <th style="width: 7%;">Status</th>
+            <th style="width: 6%;">Berkas</th>
+            <th style="width: 8%;">Status</th>
         </tr>
     </thead>
     <tbody>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Permohonan; // Panggil model Permohonan
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Http;
 
 class StatusLayananController extends Controller
 {
@@ -24,11 +25,20 @@ class StatusLayananController extends Controller
         // Validasi input dari pengguna
         $request->validate([
             'no_registrasi' => 'required|string|exists:permohonans,no_registrasi',
-            'captcha' => 'required|captcha',
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => env('RECAPTCHA_SECRET_KEY'),
+                    'response' => $value,
+                    'remoteip' => request()->ip(),
+                ]);
+
+                // Jika Google bilang "False" (gagal), maka tampilkan error
+                if (!$gResponse->json('success')) {
+                    $fail('Verifikasi robot gagal, silakan coba lagi.');
+                }
+            }]
         ], [
-            // Pesan error kustom dalam Bahasa Indonesia
-            'captcha.required' => 'Kode keamanan wajib diisi.',
-            'captcha.captcha' => 'Kode keamanan salah, silakan coba lagi.',
+            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
             'no_registrasi.required' => 'Nomor registrasi wajib diisi.',
             'no_registrasi.exists' => 'Nomor registrasi tidak ditemukan di sistem kami. Mohon periksa kembali.',
         ]);

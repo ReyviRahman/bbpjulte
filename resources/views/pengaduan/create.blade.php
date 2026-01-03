@@ -95,30 +95,16 @@
                         </div>
 
                         <div class="form-group full-width no-top-border">
-                            <label for="captcha">Kode Keamanan *</label>
+                            <label>Verifikasi Keamanan *</label>
 
-                            <div class="flex flex-col md:flex-row gap-4 items-start md:items-center mt-2">
-                                {{-- Gambar CAPTCHA --}}
-                                <div class="captcha-img-wrapper border rounded-md overflow-hidden shadow-sm">
-                                    <span id="captcha-img">{!! captcha_img('flat') !!}</span>
+                            {{-- Div ini otomatis jadi checkbox "I'm not a robot" --}}
+                            <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+
+                            {{-- Pesan Error --}}
+                            @error('g-recaptcha-response')
+                                <div class="error-message text-red-600 text-sm mt-1">
+                                    {{ $message }}
                                 </div>
-
-                                {{-- Tombol Refresh --}}
-                                <button type="button" id="reload-captcha"
-                                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150"
-                                    title="Ganti Kode">
-                                    &#x21bb; {{-- Ikon Refresh --}}
-                                </button>
-
-                                {{-- Input Text --}}
-                                <div class="flex-grow w-full md:w-auto">
-                                    <input type="text" id="captcha" name="captcha" class="form-input w-full"
-                                        placeholder="Ketik karakter yang muncul di gambar" required>
-                                </div>
-                            </div>
-
-                            @error('captcha')
-                                <div class="error-message text-red-600 text-sm mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 

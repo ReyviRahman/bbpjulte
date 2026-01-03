@@ -2181,7 +2181,14 @@
                     type: 'pie',
                     height: '100%',
                     ...chartTheme, // Pastikan variabel chartTheme sudah didefinisikan sebelumnya
-                    toolbar: { show: true }
+                    toolbar: {
+                        show: true,
+                        export: {
+                            png: { filename: 'Berdasarkan Jenis Kelamin' },
+                            svg: { filename: 'Berdasarkan Jenis Kelamin' },
+                            csv: { filename: 'Berdasarkan Jenis Kelamin' }
+                        }
+                    }
                 },
                 legend: {
                     position: 'bottom',
@@ -2195,6 +2202,8 @@
                         }
                     }
                 }
+
+                
             };
 
             // Render Chart
@@ -2289,7 +2298,14 @@
                     type: 'pie',
                     height: '100%',
                     ...chartTheme,
-                    toolbar: { show: true }
+                    toolbar: {
+                        show: true,
+                        export: {
+                            png: { filename: 'Loyalitas Rekomendasi Pengguna' },
+                            svg: { filename: 'Loyalitas Rekomendasi Pengguna' },
+                            csv: { filename: 'Loyalitas Rekomendasi Pengguna' }
+                        }
+                    }
                 },
                 legend: {
                     position: 'bottom',

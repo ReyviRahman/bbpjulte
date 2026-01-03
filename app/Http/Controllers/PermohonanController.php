@@ -6,14 +6,8 @@ use App\Models\Permohonan;
 use Illuminate\Http\Request;
 use App\Events\PermohonanDibuat;
 use App\Models\FormPermohonan;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Http;
 
 class PermohonanController extends Controller
 {
@@ -64,10 +58,21 @@ class PermohonanController extends Controller
             'isi_permohonan' => 'required|string',
             'surat_permohonan' => 'required|file|mimes:pdf|max:2048',
             'berkas_permohonan' => 'nullable|file|mimes:pdf|max:5120',
-            'captcha' => 'required|captcha',
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => env('RECAPTCHA_SECRET_KEY'),
+                    'response' => $value,
+                    'remoteip' => request()->ip(),
+                ]);
+
+                // Jika Google bilang "False" (gagal), maka tampilkan error
+                if (!$gResponse->json('success')) {
+                    $fail('Verifikasi robot gagal, silakan coba lagi.');
+                }
+            }]
         ], [
-            'captcha.required' => 'Kode keamanan wajib diisi.',
-            'captcha.captcha' => 'Kode keamanan salah, silakan coba lagi.',
+            // Custom message khusus jika user lupa mencentang (required)
+            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
         ]);
 
         // 2. Logika untuk menangani input "lainnya"

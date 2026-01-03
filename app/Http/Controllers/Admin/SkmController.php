@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request; // <-- INI YANG PERLU DITAMBAHKAN
+use App\Models\FormSkm;
+use Illuminate\Http\Request; 
 use App\Models\Skm;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -288,6 +289,10 @@ class SkmController extends Controller
 
             unset($rows[0]); // buang header
 
+            $validPetugas = FormSkm::where('category', 'Nama Petugas yang melayani')
+                ->pluck('name') // Ambil hanya kolom 'name'
+                ->toArray();
+
             foreach ($rows as $row) {
                 // pastikan jumlah kolom cukup
                 $row = array_pad($row, 22, null);
@@ -313,6 +318,23 @@ class SkmController extends Controller
                     continue;
                 }
 
+                // --- LOGIC: NAMA PETUGAS (DARI MODEL) ---
+                $rawPetugas = trim($row[1]);
+                $finalNamaPetugas = ""; // Default kosong
+                // Cek apakah input spreadsheet ada di dalam daftar valid petugas dari DB
+                if (in_array($rawPetugas, $validPetugas)) {
+                    $finalNamaPetugas = $rawPetugas;
+                }
+
+                // --- LOGIC: NAMA PEMOHON ---
+                // Default isi dengan nilai row[1]
+                $finalNamaPemohon = trim($row[1]);
+
+                // Jika row[20] tidak kosong, ganti isinya 
+                if (!empty($row[20]) && trim($row[20]) !== '') {
+                    $finalNamaPemohon = trim($row[20]);
+                }
+
 
                 $kritik_saran = $row[16]; // default dari kolom 16
                 if ($row[16] === '') {
@@ -326,13 +348,13 @@ class SkmController extends Controller
                 DB::table('skm')->updateOrInsert(
                     [
                         'created_at' => $timestamp,
-                        'nama_pemohon' => $row[2]
+                        'email' => strtolower(trim($row[3]))
                     ],
                     [
                         'created_at'              => $timestamp,
                         'updated_at'              => $timestamp,
-                        'nama_petugas'            => trim($row[1]),
-                        'nama_pemohon'            => trim($row[21]),
+                        'nama_petugas'            => $finalNamaPetugas,
+                        'nama_pemohon'            => $finalNamaPemohon,
                         'jenis_kelamin'           => null,
                         'pendidikan'              => null,
                         'profesi'                 => null,
@@ -534,15 +556,15 @@ class SkmController extends Controller
     }
 
     public function exportPdf(Request $request)
-{
-    $query = $this->getFilteredQuery($request);
-    $data = $query->get();
+    {
+        $query = $this->getFilteredQuery($request);
+        $data = $query->get();
 
-    $pdf = Pdf::loadView('admin.skm.print_view', ['data' => $data])
-        ->setPaper('legal', 'landscape'); // WAJIB LEGAL AGAR KOLOM LEGA
+        $pdf = Pdf::loadView('admin.skm.print_view', ['data' => $data])
+            ->setPaper('legal', 'landscape'); // WAJIB LEGAL AGAR KOLOM LEGA
 
-    return $pdf->download('Laporan-SKM-' . date('d-m-Y') . '.pdf');
-}
+        return $pdf->download('Laporan-SKM-' . date('d-m-Y') . '.pdf');
+    }
 
     public function printView(Request $request)
     {

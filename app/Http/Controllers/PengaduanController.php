@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengaduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class PengaduanController extends Controller
 {
@@ -29,10 +30,20 @@ class PengaduanController extends Controller
             'instansi' => 'required|string|max:255',
             'isi_aduan' => 'required|string',
             'bukti_aduan' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'captcha' => 'required|captcha',
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => env('RECAPTCHA_SECRET_KEY'),
+                    'response' => $value,
+                    'remoteip' => request()->ip(),
+                ]);
+
+                // Jika Google bilang "False" (gagal), maka tampilkan error
+                if (!$gResponse->json('success')) {
+                    $fail('Verifikasi robot gagal, silakan coba lagi.');
+                }
+            }]
         ], [
-            'captcha.required' => 'Kode keamanan wajib diisi.',
-            'captcha.captcha' => 'Kode keamanan salah, silakan coba lagi.',
+            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
         ]);
 
         $pathBukti = null;
