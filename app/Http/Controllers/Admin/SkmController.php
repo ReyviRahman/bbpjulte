@@ -153,6 +153,19 @@ class SkmController extends Controller
                     $layanan_didapat = ucwords($row[9]); // ambil dari kolom 9
                 }
 
+                $ada_pungutan   = trim($row[20]);
+                $jenis_pungutan = trim($row[23]);
+
+                if ($ada_pungutan == 'Ya') {
+                    // Cek jika mengandung kata "tidak" ATAU typo "tidka"
+                    if (
+                        stripos($jenis_pungutan, 'tidak') !== false || 
+                        stripos($jenis_pungutan, 'tidka') !== false
+                    ) {
+                        $ada_pungutan   = 'Tidak';
+                        $jenis_pungutan = '';
+                    }
+                }
 
 
                 $kritik_saran = $row[22]; // default dari kolom 22
@@ -190,10 +203,10 @@ class SkmController extends Controller
                         'kesopanan_dan_keramahan_petugas'  => $row[17],
                         'penanganan_pengaduan_saran_dan_masukan'  => $row[18],
                         'sarana_dan_prasarana_penunjang_pelayanan'  => $row[19],
-                        'ada_pungutan'  => $row[20],
+                        'ada_pungutan'  => $ada_pungutan,
                         'akan_informasikan_layanan'  => $row[21],
                         'kritik_saran'  => $kritik_saran,
-                        'jenis_pungutan'  => $row[23],
+                        'jenis_pungutan'  => $jenis_pungutan,
                     ]
                 );
             }
@@ -341,6 +354,19 @@ class SkmController extends Controller
                     $kritik_saran = $row[18]; // ambil dari kolom 18
                 }
 
+                $ada_pungutan   = trim($row[14]);
+                $jenis_pungutan = trim($row[17]);
+
+                if ($ada_pungutan == 'Ya') {
+                    // Cek jika mengandung kata "tidak"
+                    if (
+                        stripos($jenis_pungutan, 'tidak') !== false 
+                    ) {
+                        $ada_pungutan   = 'Tidak';
+                        $jenis_pungutan = '';
+                    }
+                }
+
                 // ================================
                 // L = LOAD
                 // Masukkan data ke database
@@ -370,10 +396,10 @@ class SkmController extends Controller
                         'kesopanan_dan_keramahan_petugas' => $this->skmNilai($row[11]),
                         'penanganan_pengaduan_saran_dan_masukan' => $this->skmNilai($row[12]),
                         'sarana_dan_prasarana_penunjang_pelayanan' => $this->skmNilai($row[13]),
-                        'ada_pungutan'  => $row[14],
+                        'ada_pungutan'  => $ada_pungutan,
                         'akan_informasikan_layanan'  => $row[15],
                         'kritik_saran'  => $kritik_saran,
-                        'jenis_pungutan'  => $row[17],
+                        'jenis_pungutan'  => $jenis_pungutan,
                     ]
                 );
             }
