@@ -607,27 +607,58 @@ class SkmController extends Controller
     private function getFilteredQuery(Request $request)
     {
         $query = Skm::query();
+        $year = $request->input('year', date('Y'));
 
         // 1. LOGIKA FILTER TANGGAL
         if ($request->filled('date_filter')) {
             $filter = $request->date_filter;
-            switch ($filter) {
-                case 'today':
-                    $query->whereDate('created_at', Carbon::today());
-                    break;
-                case 'last_7_days':
-                    $query->where('created_at', '>=', Carbon::now()->subDays(6));
-                    break;
-                case 'last_month':
-                    $query->where('created_at', '>=', Carbon::today()->subDays(29));
-                    break;
-                case 'custom':
-                    if ($request->filled('start_date') && $request->filled('end_date')) {
-                        $startDate = Carbon::parse($request->start_date)->startOfDay();
-                        $endDate = Carbon::parse($request->end_date)->endOfDay();
-                        $query->whereBetween('created_at', [$startDate, $endDate]);
-                    }
-                    break;
+            if ($filter == 'today') {
+                $query->whereDate('created_at', Carbon::today());
+            } elseif ($filter == 'last_7_days') {
+                $query->where('created_at', '>=', Carbon::today()->subDays(6));
+            } elseif ($filter == 'last_month') {
+                $query->where('created_at', '>=', Carbon::today()->subDays(29));
+            } elseif ($filter == 'last_year') {
+                // 1 Tahun Terakhir (365 hari ke belakang)
+                $query->where('created_at', '>=', Carbon::today()->subYear());
+            } elseif ($filter == 'custom') {
+                if ($request->filled('start_date') && $request->filled('end_date')) {
+                    $query->whereBetween('created_at', [
+                        Carbon::parse($request->start_date)->startOfDay(),
+                        Carbon::parse($request->end_date)->endOfDay()
+                    ]);
+                }
+            }
+            // --- LOGIKA TRIWULAN ---
+            elseif (\Illuminate\Support\Str::startsWith($filter, 'triwulan_')) {
+                $triwulan = explode('_', $filter)[1]; // Ambil angka 1, 2, 3, atau 4
+
+                // Hitung bulan awal: TW1=1, TW2=4, TW3=7, TW4=10
+                $startMonth = ($triwulan - 1) * 3 + 1;
+
+                $startDate = Carbon::createFromDate($year, $startMonth, 1)->startOfDay();
+                $endDate = $startDate->copy()->addMonths(2)->endOfMonth()->endOfDay();
+
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            } elseif ($filter == 'all_triwulan') {
+                $query->whereYear('created_at', $year); // Sepanjang tahun ini
+            }
+            // --- LOGIKA SEMESTER ---
+            elseif (\Illuminate\Support\Str::startsWith($filter, 'semester_')) {
+                $semester = explode('_', $filter)[1]; // 1 atau 2
+
+                if ($semester == 1) {
+                    // Jan - Jun
+                    $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 6, 30)->endOfDay();
+                } else {
+                    // Jul - Dec
+                    $startDate = Carbon::createFromDate($year, 7, 1)->startOfDay();
+                    $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
+                }
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            } elseif ($filter == 'all_semester') {
+                $query->whereYear('created_at', $year);
             }
         }
 

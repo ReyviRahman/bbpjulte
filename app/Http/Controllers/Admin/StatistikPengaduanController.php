@@ -159,6 +159,9 @@ class StatistikPengaduanController extends Controller
         } elseif ($dateFilter == 'last_month') {
             $startDate = Carbon::today()->subDays(29);
             $endDate = Carbon::today();
+        } elseif ($dateFilter == 'whole_year') {
+            $startDate = Carbon::createFromDate($year, 1, 1)->startOfYear();
+            $endDate = Carbon::createFromDate($year, 12, 31)->endOfYear();
         } elseif ($dateFilter == 'custom') {
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $startDate = Carbon::parse($request->input('start_date'));

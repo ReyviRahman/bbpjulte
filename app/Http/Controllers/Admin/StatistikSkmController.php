@@ -255,10 +255,8 @@ class StatistikSkmController extends Controller
         });
 
         //tabel skm
-
         $skmData = $query->get();
         $total = $skmData->count();
-
         $unsur = [
             'U1' => 'syarat_pengurusan_pelayanan',
             'U2' => 'sistem_mekanisme_dan_prosedur_pelayanan',
@@ -270,12 +268,10 @@ class StatistikSkmController extends Controller
             'U8' => 'penanganan_pengaduan_saran_dan_masukan',
             'U9' => 'sarana_dan_prasarana_penunjang_pelayanan',
         ];
-
         $snilai = [];
         $nrr = [];
         $nrrTertimbang = [];
         $kategori = [];
-
         // jika total = 0, hindari division by zero
         if ($total == 0) {
             foreach ($unsur as $key => $kolom) {
@@ -284,34 +280,25 @@ class StatistikSkmController extends Controller
                 $nrrTertimbang[$key] = 0;
                 $kategori[$key] = 'D';
             }
-
             $jumlahNRRTertimbang = 0;
             $ikm = 0;
             $mutu = 'Tidak Baik';
         } else {
-
             foreach ($unsur as $key => $kolom) {
-
                 // SNilai
                 $snilai[$key] = $skmData->sum($kolom);
-
                 // NRR (aman karena $total > 0)
                 $nrr[$key] = $snilai[$key] / $total;
-
                 // NRR tertimbang
                 $nrrTertimbang[$key] = $nrr[$key] * 0.111;
-
                 // Kategori
                 $kategori[$key] =
                     $nrr[$key] >= 3.53 ? 'A' : ($nrr[$key] >= 3.06 ? 'B' : ($nrr[$key] >= 2.60 ? 'C' : 'D'));
             }
-
             // jumlah semua NRR tertimbang
             $jumlahNRRTertimbang = array_sum($nrrTertimbang);
-
             // nilai IKM
             $ikm = round($jumlahNRRTertimbang * 25, 3);
-
             // mutu pelayanan
             $mutu =
                 $ikm >= 88.31 ? 'Sangat Baik' : ($ikm >= 76.61 ? 'Baik' : ($ikm >= 65 ? 'Kurang Baik' : 'Tidak Baik'));
@@ -393,9 +380,7 @@ class StatistikSkmController extends Controller
             ->values()
             ->map(fn($y) => (string)$y)
             ->all();
-
         $n = count($ikmYears);
-
         // siapkan series aligned dengan tahun
         $ikmSeries = [
             'TW1' => array_fill(0, $n, null),
@@ -403,7 +388,6 @@ class StatistikSkmController extends Controller
             'TW3' => array_fill(0, $n, null),
             'TW4' => array_fill(0, $n, null),
         ];
-
         // Array baru untuk menampung teks kategori
         $metaSeries = [
             'TW1' => array_fill(0, $n, null),
@@ -411,32 +395,26 @@ class StatistikSkmController extends Controller
             'TW3' => array_fill(0, $n, null),
             'TW4' => array_fill(0, $n, null),
         ];
-
         // mapping tahun -> index (tetap sama)
         $yearIndex = [];
         foreach ($ikmYears as $i => $y) {
             $yearIndex[(int)$y] = $i;
         }
-
         // isi nilai IKM per triwulan DAN info layanan terbanyak
         foreach ($ikmRows as $r) {
             $idx = $yearIndex[(int)$r->tahun];
             $q   = (int)$r->triwulan;
             $tw  = 'TW' . $q;
-
             // Isi Nilai IKM
             $ikmSeries[$tw][$idx] = ((int)$r->total > 0) ? round((float)$r->ikm, 2) : null;
-
             // Isi Layanan Terbanyak (Ambil dari lookup)
             $metaSeries[$tw][$idx] = $topLayananLookup[(int)$r->tahun][$q] ?? '-';
         }
-
         // mapping tahun -> index
         $yearIndex = [];
         foreach ($ikmYears as $i => $y) {
             $yearIndex[(int)$y] = $i;
         }
-
         // isi nilai IKM per triwulan
         foreach ($ikmRows as $r) {
             $idx = $yearIndex[(int)$r->tahun];
@@ -1082,6 +1060,9 @@ class StatistikSkmController extends Controller
         } elseif ($dateFilter == 'last_month') {
             $startDate = Carbon::today()->subDays(29);
             $endDate = Carbon::today();
+        } elseif ($dateFilter == 'whole_year') {
+            $startDate = Carbon::createFromDate($year, 1, 1)->startOfYear();
+            $endDate = Carbon::createFromDate($year, 12, 31)->endOfYear();
         } elseif ($dateFilter == 'custom') {
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $startDate = Carbon::parse($request->input('start_date'));

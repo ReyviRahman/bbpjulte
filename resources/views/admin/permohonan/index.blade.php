@@ -38,26 +38,97 @@
                                             @if (request('status') == $status) selected @endif>{{ $status }}</option>
                                     @endforeach
                                 </select>
-                                <select name="date_filter" id="dateFilterSelect" class="filter-input">
-                                    <option value="all_time" @if (request('date_filter') == 'all_time' || !request('date_filter')) selected @endif>Semua Waktu
-                                    </option>
-                                    <option value="today" @if (request('date_filter') == 'today') selected @endif>Hari Ini
-                                    </option>
-                                    <option value="last_7_days" @if (request('date_filter') == 'last_7_days') selected @endif>7 Hari
-                                        Terakhir</option>
-                                    <option value="last_month" @if (request('date_filter') == 'last_month') selected @endif>1 Bulan
-                                        Terakhir</option>
-                                    <option value="custom" @if (request('date_filter') == 'custom') selected @endif>Rentang Kustom
-                                    </option>
-                                </select>
-                                <div id="customDateWrapper" class="flex items-center gap-2"
-                                    @if (request('date_filter') != 'custom') style="display: none;" @endif>
-                                    <input type="date" name="start_date" class="filter-input"
+                                <input type="hidden" name="date_filter" id="realDateFilterInput" value="{{ request('date_filter') }}">
+                                <div class="custom-dropdown">
+                                    <div class="filter-input dropdown-btn" onclick="toggleDropdown()">
+                                        <span id="labelText">
+                                            @php
+                                                $f = request('date_filter');
+                                                $label = 'Semua Waktu'; // Default
+
+                                                if ($f == 'today') {
+                                                    $label = 'Hari Ini';
+                                                } elseif ($f == 'last_7_days') {
+                                                    $label = '7 Hari Terakhir';
+                                                } elseif ($f == 'last_month') {
+                                                    $label = '1 Bulan Terakhir';
+                                                } elseif ($f == 'last_year') {
+                                                    $label = '1 Tahun Terakhir';
+                                                } elseif ($f == 'whole_year') {
+                                                    $label = 'Satu Tahun Penuh';
+                                                } elseif ($f == 'custom') {
+                                                    $label = 'Rentang Kustom';
+                                                    
+                                                // --- PERBAIKAN LOGIKA TRIWULAN ---
+                                                } elseif ($f == 'all_triwulan') {
+                                                    $label = 'Semua Triwulan';
+                                                } elseif (Str::startsWith($f, 'triwulan_')) {
+                                                    // Ambil angka setelah underscore (triwulan_1 -> 1)
+                                                    $num = explode('_', $f)[1] ?? 1;
+                                                    $romawi = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV'];
+                                                    $label = 'Triwulan ' . ($romawi[$num] ?? $num);
+
+                                                // --- PERBAIKAN LOGIKA SEMESTER ---
+                                                } elseif ($f == 'all_semester') {
+                                                    $label = 'Semua Semester';
+                                                } elseif (Str::startsWith($f, 'semester_')) {
+                                                    // Ambil angka setelah underscore (semester_1 -> 1)
+                                                    $num = explode('_', $f)[1] ?? 1;
+                                                    $romawi = [1 => 'I', 2 => 'II'];
+                                                    $label = 'Semester ' . ($romawi[$num] ?? $num);
+                                                }
+                                            @endphp
+
+                                            {{ $label }}
+                                        </span>
+                                    </div>
+
+                                    <div id="myDropdown" class="dropdown-content">
+                                        <div class="dropdown-item" onclick="selectOption('all_time', 'Semua Waktu')">Semua Waktu</div>
+                                        <div class="dropdown-item" onclick="selectOption('today', 'Hari Ini')">Hari Ini</div>
+                                        <div class="dropdown-item" onclick="selectOption('last_7_days', '7 Hari Terakhir')">7 Hari Terakhir</div>
+                                        <div class="dropdown-item" onclick="selectOption('last_month', '1 Bulan Terakhir')">1 Bulan Terakhir</div>
+                                        <div class="dropdown-item" onclick="selectOption('last_year', '1 Tahun Terakhir')">1 Tahun Terakhir</div>
+
+                                        <div class="dropdown-item has-submenu">
+                                            <span>Berdasarkan Triwulan</span>
+                                            <span class="arrow-right">&#9656;</span>
+                                            <div class="submenu">
+                                                <div class="dropdown-item" onclick="selectOption('all_triwulan', 'Semua Triwulan')">Semua Triwulan</div>
+                                                <div class="dropdown-item" onclick="selectOption('triwulan_1', 'Triwulan I')">Triwulan I</div>
+                                                <div class="dropdown-item" onclick="selectOption('triwulan_2', 'Triwulan II')">Triwulan II</div>
+                                                <div class="dropdown-item" onclick="selectOption('triwulan_3', 'Triwulan III')">Triwulan III</div>
+                                                <div class="dropdown-item" onclick="selectOption('triwulan_4', 'Triwulan IV')">Triwulan IV</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="dropdown-item has-submenu">
+                                            <span>Berdasarkan Semester</span>
+                                            <span class="arrow-right">&#9656;</span>
+                                            <div class="submenu">
+                                                <div class="dropdown-item" onclick="selectOption('all_semester', 'Semua Semester')">Semua Semester</div>
+                                                <div class="dropdown-item" onclick="selectOption('semester_1', 'Semester I')">Semester I</div>
+                                                <div class="dropdown-item" onclick="selectOption('semester_2', 'Semester II')">Semester II</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="dropdown-item" onclick="selectOption('custom', 'Rentang Kustom')">Rentang Kustom</div>
+                                    </div>
+                                </div>
+                                <div id="customDateWrapper" 
+                                    class="items-center gap-2 {{ request('date_filter') == 'custom' ? 'flex' : 'hidden' }}">
+                                    
+                                    <input type="date" name="start_date" class="filter-input" 
                                         value="{{ request('start_date') }}">
+                                        
                                     <span class="dark:text-gray-400">-</span>
-                                    <input type="date" name="end_date" class="filter-input"
+                                    
+                                    <input type="date" name="end_date" class="filter-input" 
                                         value="{{ request('end_date') }}">
-                                    <button type="submit" class="btn-filter-apply">Terapkan</button>
+                                        
+                                    <button type="submit" class="btn-filter-apply cursor-pointer bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        Terapkan
+                                    </button>
                                 </div>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3"><svg
@@ -554,9 +625,129 @@
         .dropdown-panel.is-active {
             display: block;
         }
+
+        /* Container Utama */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 150px; /* Sesuaikan lebar */
+        }
+
+        /* Tombol Dropdown agar mirip input select */
+        .dropdown-btn {
+            cursor: pointer;
+            background-color: #fff;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+
+        /* Konten Dropdown (Sembunyi by default) */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 50;
+            border-radius: 0.375rem;
+            border: 1px solid #f3f4f6;
+            margin-top: 5px;
+        }
+
+        /* Tampilkan jika kelas .show aktif */
+        .show {
+            display: block;
+        }
+
+        /* Item Dropdown */
+        .dropdown-item {
+            padding: 10px 16px;
+            text-decoration: none;
+            display: block;
+            color: #374151;
+            cursor: pointer;
+            font-size: 0.875rem;
+            position: relative; /* Penting untuk submenu */
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* --- LOGIKA SUBMENU HOVER --- */
+        .has-submenu {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .submenu {
+            display: none; /* Sembunyi by default */
+            position: absolute;
+            left: 100%; /* Muncul di sebelah kanan induknya */
+            top: 0;
+            background-color: #fff;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 0.375rem;
+            border: 1px solid #f3f4f6;
+        }
+
+        /* Munculkan submenu saat parent di-hover */
+        .has-submenu:hover .submenu {
+            display: block;
+        }
+
+        .arrow-right {
+            font-size: 12px;
+        }
     </style>
 
     <script>
+        // 1. Fungsi Buka/Tutup Dropdown Utama
+        function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // 2. Fungsi Saat Item Dipilih
+        function selectOption(value, text) {
+            // A. Isi nilai ke input hidden
+            document.getElementById('realDateFilterInput').value = value;
+
+            // B. Ubah Teks Label di Tombol
+            document.getElementById('labelText').innerText = text;
+
+            // C. Ambil elemen wrapper custom date & form
+            const customWrapper = document.getElementById('customDateWrapper');
+            const filterForm = document.getElementById('filterForm');
+
+            // D. Logika Submit vs Custom Date
+            if (value === 'custom') {
+                // Jika pilih Custom: Tampilkan input tanggal, JANGAN submit dulu
+                customWrapper.classList.remove('hidden');
+                customWrapper.classList.add('flex'); 
+            } else {
+                // Jika pilih selain Custom: Sembunyikan input tanggal & LANGSUNG SUBMIT
+                customWrapper.classList.add('hidden');
+                customWrapper.classList.remove('flex');
+                
+                // --- INI BAGIAN PENTING AGAR FORM TERKIRIM ---
+                filterForm.submit(); 
+            }
+
+            // E. Tutup Dropdown setelah memilih
+            document.getElementById("myDropdown").classList.remove("show");
+        }
+
         function handleExport(selectElement) {
             const url = selectElement.value;
             
@@ -575,6 +766,17 @@
             }
         }
         document.addEventListener('DOMContentLoaded', (event) => {
+            window.onclick = function(event) {
+                if (!event.target.matches('.dropdown-btn') && !event.target.matches('.dropdown-btn *')) {
+                    var dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (var i = 0; i < dropdowns.length; i++) {
+                        var openDropdown = dropdowns[i];
+                        if (openDropdown.classList.contains('show')) {
+                            openDropdown.classList.remove('show');
+                        }
+                    }
+                }
+            }
             // Logika untuk toggle kolom dengan validasi
             const table = document.getElementById('permohonanTable');
             const toggles = document.querySelectorAll('.column-toggle');
@@ -642,28 +844,15 @@
                 });
             }
 
-            // Logika untuk filter
+            // B. Handle Filter Status (Select biasa)
+            // Karena filter status masih pakai <select> biasa, kode ini tetap diperlukan
+            const statusFilterSelect = document.getElementById('statusFilterSelect');
             const filterForm = document.getElementById('filterForm');
-            if (filterForm) {
-                const dateFilterSelect = document.getElementById('dateFilterSelect');
-                const customDateWrapper = document.getElementById('customDateWrapper');
-                const statusFilterSelect = document.getElementById('statusFilterSelect');
 
-                if (dateFilterSelect && customDateWrapper) {
-                    dateFilterSelect.addEventListener('change', function() {
-                        if (this.value === 'custom') {
-                            customDateWrapper.style.display = 'flex';
-                        } else {
-                            customDateWrapper.style.display = 'none';
-                            filterForm.submit();
-                        }
-                    });
-                }
-                if (statusFilterSelect) {
-                    statusFilterSelect.addEventListener('change', function() {
-                        filterForm.submit();
-                    });
-                }
+            if (statusFilterSelect && filterForm) {
+                statusFilterSelect.addEventListener('change', function() {
+                    filterForm.submit();
+                });
             }
 
             // Logika untuk Modal Update Status

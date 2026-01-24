@@ -104,11 +104,6 @@ class StatistikController extends Controller
         // Query Data
         $query = Permohonan::whereBetween('created_at', [$startDate, $endDate]);
 
-        $layananRaw = (clone $query)
-            ->select('layanan_dibutuhkan', DB::raw(value: 'count(*) as total'))
-            ->groupBy('layanan_dibutuhkan')
-            ->get();
-
         // 1. Ambil data FormPermohonan kategori 'Layanan' beserta Sub-nya
         $masterData = FormPermohonan::where('category', 'Layanan')
             ->with('subs') // Load relasi subs (anaknya)
@@ -125,17 +120,17 @@ class StatistikController extends Controller
 
         // 4. Gabungkan Kedua Array
         $semuaLayananValid = array_merge($listInduk, $listSub);
+
         $topLayananKpi = (clone $query)
             // FILTER: Hanya hitung jika namanya ada di Induk ATAU Sub
             ->whereIn('layanan_dibutuhkan', $semuaLayananValid)
-
             // Lanjut logika hitung-hitungan
             ->select('layanan_dibutuhkan', DB::raw('count(*) as total'))
             ->groupBy('layanan_dibutuhkan')
             ->orderBy('total', 'desc')
             ->value('layanan_dibutuhkan');
 
-        // --- 3. Hitung Data Untuk Kartu Statistik ---
+        // --- Hitung Data Untuk Kartu Statistik ---
         $totalPermohonan = $query->count();
 
         $permohonanDiajukan = (clone $query)->where('status', 'Diajukan')->count();
@@ -185,6 +180,10 @@ class StatistikController extends Controller
 
         // Loop Data Transaksi
         // ... (Bagian atas code tetap sama) ...
+        $layananRaw = (clone $query)
+            ->select('layanan_dibutuhkan', DB::raw(value: 'count(*) as total'))
+            ->groupBy('layanan_dibutuhkan')
+            ->get();
 
         // Loop Data Transaksi
         foreach ($layananRaw as $row) {
@@ -230,6 +229,7 @@ class StatistikController extends Controller
                 }
             }
         }
+        
 
         // ... (Lanjut ke bagian arsort dan Highcharts series) ...
 
@@ -561,6 +561,9 @@ class StatistikController extends Controller
         } elseif ($dateFilter == 'last_month') {
             $startDate = Carbon::today()->subDays(29);
             $endDate = Carbon::today();
+        } elseif ($dateFilter == 'whole_year') {
+            $startDate = Carbon::createFromDate($year, 1, 1)->startOfYear();
+            $endDate = Carbon::createFromDate($year, 12, 31)->endOfYear();
         } elseif ($dateFilter == 'custom') {
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $startDate = Carbon::parse($request->input('start_date'));

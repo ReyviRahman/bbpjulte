@@ -266,6 +266,8 @@
                                 $label = '7 Hari Terakhir';
                             } elseif ($filter == 'last_month') {
                                 $label = '1 Bulan Terakhir';
+                            } elseif ($filter == 'whole_year') {
+                                $label = '1 Tahun Terakhir';
                             } elseif ($filter == 'all_time') {
                                 $label = 'Semua Waktu';
                             } elseif ($filter == 'custom') {
@@ -302,6 +304,8 @@
                     <div class="dropdown-item" onclick="selectOption('last_7_days', '7 Hari Terakhir')">7 Hari Terakhir
                     </div>
                     <div class="dropdown-item" onclick="selectOption('last_month', '1 Bulan Terakhir')">1 Bulan Terakhir
+                    </div>
+                    <div class="dropdown-item" onclick="selectOption('whole_year', '1 Tahun Terakhir')">1 Tahun Terakhir
                     </div>
 
                     <div class="dropdown-item has-submenu">
@@ -1061,6 +1065,8 @@
                                 $title = '7 Hari Terakhir';
                             } elseif ($filter == 'last_month') {
                                 $title = '1 Bulan Terakhir';
+                            } elseif ($filter == 'whole_year') {
+                                $title = '1 Tahun Terakhir '.$year;
                             } elseif ($filter == 'all_time') {
                                 $title = 'Semua Waktu';
 
