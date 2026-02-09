@@ -71,7 +71,6 @@ class StatistikController extends Controller
         // Siapkan wadah untuk hitungan
         $mainCounts = [];     // Total per Induk
         $drillData  = [];     // Detail per Anak
-        $validNames = [];     // Untuk filter query (whereIn)
         $validChildrenList = [];
 
         foreach ($masterCategories as $cat) {
@@ -158,22 +157,7 @@ class StatistikController extends Controller
         $labelsTren = $trenHarian->pluck('tanggal');
         $dataTren = $trenHarian->pluck('total');
 
-        // 1. Query Database (Sama)
-        $layananPerKategori = (clone $query)
-            ->select('layanan_dibutuhkan', DB::raw('count(*) as total'))
-            ->groupBy('layanan_dibutuhkan')
-            ->orderBy('total', 'desc')
-            ->get();
-
-        // --- 5. Proses Logic Grouping (Main & Drilldown) ---
-        // ... (Bagian atas kode tetap sama: $masterCategories, $colorMap, dll) ...
-
         // TAMBAHAN: Buat penanda mana Induk yang punya anak, mana yang jomblo/tunggal
-        $parentHasSubs = [];
-        foreach ($masterCategories as $cat) {
-            // True jika punya sub, False jika tidak
-            $parentHasSubs[$cat->name] = $cat->subs->count() > 0;
-        }
 
         $defaultInduk = 'Fasilitasi Bantuan Teknis';
         $defaultSub   = 'Lainnya';
@@ -229,18 +213,9 @@ class StatistikController extends Controller
                 }
             }
         }
-        
-
-        // ... (Lanjut ke bagian arsort dan Highcharts series) ...
-
-        // ... (Lanjut ke bagian arsort dan penyusunan Highcharts series) ...
-
-        // --- 6. Siapkan Struktur Data Highcharts ---
-
         // A. Main Series
         // Sort dari terbesar ke terkecil
         // --- 6. Siapkan Struktur Data Highcharts ---
-
         arsort($mainCounts);
 
         $finalMainData = [];
@@ -468,42 +443,6 @@ class StatistikController extends Controller
             ];
         });
 
-        $chartColors = [
-            '#FF4560',
-            '#008FFB',
-            '#00E396',
-            '#FEB019',
-            '#775DD0',
-            '#FF66C4',
-            '#2ECC71',
-            '#9B59B6',
-            '#00B8D9',
-            '#FF9F1C',
-            '#F72585',
-            '#4CC9F0',
-            '#3A86FF',
-            '#8338EC',
-            '#FF006E',
-            '#FB5607',
-            '#06D6A0',
-            '#118AB2',
-            '#FFD166',
-            '#EF476F',
-            '#8AC926',
-            '#1982C4',
-            '#6A4C93',
-            '#FF595E',
-            '#FFCA3A',
-            '#C77DFF',
-            '#80ED99',
-            '#43AA8B',
-            '#F3722C',
-            '#90BE6D',
-            '#577590',
-            '#F9C74F',
-        ];
-
-
         return view('admin.statistik.index', [
             // Data untuk Kartu
             'totalPermohonan' => $totalPermohonan,
@@ -520,7 +459,6 @@ class StatistikController extends Controller
             'topLayanan' => $topLayanan->sortBy('total'), // Di-sort agar bar chart dari bawah ke atas
             'distribusiProfesi' => $distribusiProfesi,
             'distribusiGender' => $distribusiGender,
-            'layananPerKategori' => $layananPerKategori,
             'layananPerPendidikan' => $layananPerPendidikan,
 
             // Passing warna
@@ -537,7 +475,6 @@ class StatistikController extends Controller
             'endDate' => $endDate->format('Y-m-d'),
             'mainSeries' => $mainSeries,
             'drilldownSeries' => $finalDrilldownSeries,
-            'chartColors' => $chartColors,
         ]);
     }
 

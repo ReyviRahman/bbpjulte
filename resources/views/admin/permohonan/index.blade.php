@@ -650,6 +650,15 @@
             background-size: 1.5em 1.5em;
         }
 
+        /* Tambahkan ini untuk Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            .dropdown-btn {
+                background-color: #1f2937; /* Ganti ke warna gelap (contoh: dark gray) */
+                border-color: #fff;     /* Border lebih gelap agar menyatu */
+                color: #fff;               /* Teks jadi putih agar terbaca */
+            }
+        }
+
         /* Konten Dropdown (Sembunyi by default) */
         .dropdown-content {
             display: none;

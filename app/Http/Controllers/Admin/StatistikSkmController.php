@@ -54,7 +54,6 @@ class StatistikSkmController extends Controller
 
         // 3. Warna Nilai Rata-rata (Skor 1-4)
         $scoreColor = '#1e89ef';
-        $defaultColor = '#5d89b0';
 
         // ---------------------------------------------------------
         // 4. LOGIKA PEWARNAAN ANAK (SUB-LAYANAN)
@@ -90,7 +89,6 @@ class StatistikSkmController extends Controller
         $query = Skm::whereBetween('created_at', [$startDate, $endDate])->where('status', '!=', 'Privat');
 
         // Ambil input triwulan + tahun
-        $quarter = $request->input('quarter');
         $year    = $request->input('year');
 
         $totalResponden = $query->count();
@@ -121,19 +119,9 @@ class StatistikSkmController extends Controller
             ->orderByDesc('total') // Urutkan dari yang terbanyak
             ->first();
 
-        $totalPengaduan = Pengaduan::whereBetween('created_at', [$startDate, $endDate])->count();
 
         $skmPublik = Skm::whereBetween('created_at', [$startDate, $endDate])->where('status', 'Publik')->count();
         $skmPrivat = Skm::whereBetween('created_at', [$startDate, $endDate])->where('status', 'Privat')->count();
-        // Tren Harian (Area Chart)
-        $trenHarian = (clone $query)
-            ->select(DB::raw("DATE(created_at) as tanggal"), DB::raw('count(*) as total'))
-            ->groupBy('tanggal')
-            ->orderBy('tanggal', 'asc')
-            ->get();
-
-        $labelsTren = $trenHarian->pluck('tanggal');
-        $dataTren = $trenHarian->pluck('total');
 
         // Proporsi Skor Responden per Aspek Layanan
         $fields = [
@@ -147,21 +135,6 @@ class StatistikSkmController extends Controller
             'penanganan_pengaduan_saran_dan_masukan',
             'sarana_dan_prasarana_penunjang_pelayanan'
         ];
-
-        $skor1 = [];
-        $skor2 = [];
-        $skor3 = [];
-        $skor4 = [];
-        $aspek = [];
-
-        foreach ($fields as $field) {
-            $aspek[] = ucwords(str_replace('_', ' ', $field));
-
-            $skor1[] = (clone $query)->where($field, 1)->count();
-            $skor2[] = (clone $query)->where($field, 2)->count();
-            $skor3[] = (clone $query)->where($field, 3)->count();
-            $skor4[] = (clone $query)->where($field, 4)->count();
-        }
 
         // Rata-rata Skor Kepuasan Pengguna Layanan per Aspek Layanan
         $kategoriLayananPerAspek = [];
@@ -990,29 +963,17 @@ class StatistikSkmController extends Controller
         return view('admin.statistik-skm.index', [
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
-            'totalPengaduan' => $totalPengaduan,
-            'aspek' => $aspek,
-            'skor1' => $skor1,
-            'skor2' => $skor2,
-            'skor3' => $skor3,
-            'skor4' => $skor4,
             'kategoriLayananPerAspek' => $kategoriLayananPerAspek,
             'jumlahDataPerAspek' => $jumlahDataPerAspek,
             'distribusiGender' => $distribusiGender,
             'skmRekomen' => $skmRekomen,
-            'labelsTren' => $labelsTren,
-            'dataTren' => $dataTren,
-            'quarter'   => $quarter,
             'year'      => $year,
             'totalResponden' => $totalResponden,
             'layananTerbanyak' => $layananTerbanyak,
             'skmPublik' => $skmPublik,
             'skmPrivat' => $skmPrivat,
             'skmData' => $skmData,
-            'snilai' => $snilai,
             'nrr' => $nrr,
-            'nrrTertimbang' => $nrrTertimbang,
-            'kategori' => $kategori,
             'jumlahNRRTertimbang' => $jumlahNRRTertimbang,
             'ikm' => $ikm,
             'mutu' => $mutu,
