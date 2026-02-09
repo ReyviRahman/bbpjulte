@@ -123,17 +123,14 @@
                     </li>
                 </ul>
                 <ul>
-                    <li class="{{ request()->is('admin/forms*') ? 'active' : '' }}">
+                    <li class="{{ request()->is('admin/forms*') ? 'active' : '' }} mt-50">
                         <a href="{{ route('admin.forms.daftar-input') }}" title="Pengguna">
-                            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.071M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-4.675c.312-.1.63-.195.947-.285a6.375 6.375 0 01-4.246-3.11M12 2.25c-2.35 0-4.25 1.9-4.25 4.25v.375c0 .777.313 1.5.875 2.037a4.25 4.25 0 006.75 0c.563-.537.875-1.26.875-2.037v-.375c0-2.35-1.9-4.25-4.25-4.25z" />
-                            </svg>
-                            <span class="nav-text">Manajemen Formulir</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+                            <span class="nav-text ms-3">Pengaturan</span>
                         </a>
                     </li>
                 </ul>
+                
             </nav>
             <div class="sidebar-footer">
                 <button class="sidebar-toggle" id="sidebarToggleBtn" title="Minimize Sidebar">

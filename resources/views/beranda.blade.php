@@ -67,6 +67,7 @@
             Ajukan Permohonan Layanan Sekarang
         </a>
 
+        {{-- layanan selesai dan di proses --}}
         <div class="bg-white">
             <div class="max-w-6xl mx-auto px-5 text-center">
                 {{-- Container Grid --}}

@@ -47,7 +47,7 @@ class StatistikPengaduanController extends Controller
         // Query Data
         $query = Pengaduan::whereBetween('created_at', [$startDate, $endDate]);
 
-        // --- 3. Hitung Data Untuk Kartu Statistik ---
+        // Hitung Data Untuk Kartu Statistik ---
         $totalPengaduan = $query->count();
 
         // Hitung jumlah pengaduan berdasarkan statusnya
@@ -55,17 +55,17 @@ class StatistikPengaduanController extends Controller
         $pengaduanDiproses = (clone $query)->where('status', 'Diproses')->count();
         $pengaduanDiajukan = (clone $query)->where('status', 'Diajukan')->count();
 
-        // --- 4. Siapkan Data untuk Grafik ---
+        // Siapkan Data untuk Grafik ---
 
-        // A. Distribusi Status (Donut Chart)
+        // Distribusi Status (Donut Chart)
         $distribusiStatus = (clone $query)->select('status', DB::raw('count(*) as total'))->groupBy('status')->get();
 
-        // B. Tren Harian (Area Chart)
+        // Tren Harian (Area Chart)
         $trenHarian = (clone $query)->select(DB::raw("DATE(created_at) as tanggal"), DB::raw('count(*) as total'))->groupBy('tanggal')->orderBy('tanggal', 'asc')->get();
         $labelsTren = $trenHarian->pluck('tanggal');
         $dataTren = $trenHarian->pluck('total');
 
-        // C. Distribusi Profesi (Pie Chart)
+        // Distribusi Profesi (Pie Chart)
         $distribusiProfesi = (clone $query)
             ->selectRaw("
         CASE
@@ -92,7 +92,7 @@ class StatistikPengaduanController extends Controller
             ->orderBy('total', 'desc')
             ->get();
 
-        // --- 5. Kirim data ke view ---
+        // Kirim data ke view 
         return view('admin.statistik-pengaduan.index', [
             // Data untuk Kartu
             'totalPengaduan' => $totalPengaduan,
@@ -198,7 +198,7 @@ class StatistikPengaduanController extends Controller
         $startDate = $range['start'];
         $endDate   = $range['end'];
 
-        // 2. QUERY BASE
+        // QUERY data
         // =========================
         // Langsung pakai variabel di atas
         $base = Pengaduan::query()->whereBetween('created_at', [$startDate, $endDate]);

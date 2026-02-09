@@ -152,7 +152,7 @@ class PermohonanController extends Controller
             $rawMessage = $e->getMessage();
             $friendlyMessage = 'Terjadi kesalahan saat proses ETL.';
 
-            // ✅ Ambil HANYA message dari JSON Google API jika ada
+            //  Ambil HANYA message dari JSON Google API jika ada
             if (str_contains($rawMessage, '{')) {
                 $jsonPart = substr($rawMessage, strpos($rawMessage, '{'));
                 $decoded = json_decode($jsonPart, true);
@@ -168,7 +168,7 @@ class PermohonanController extends Controller
                 $friendlyMessage = $rawMessage;
             }
 
-            // ✅ TRANSLATE ERROR KE BAHASA INDONESIA
+            //  TRANSLATE ERROR KE BAHASA INDONESIA
             $translations = [
                 'Requested entity was not found.' => 'Data tidak ditemukan. Pastikan ID Spreadsheet dan nama Sheet sudah benar.',
                 'Not Found' => 'Data tidak ditemukan.',
@@ -184,7 +184,7 @@ class PermohonanController extends Controller
                 $friendlyMessage = $translations[$friendlyMessage];
             }
 
-            // ✅ KIRIM KE BLADE DALAM BAHASA INDONESIA
+            //  KIRIM KE BLADE DALAM BAHASA INDONESIA
             return redirect()->back()->with(
                 'error',
                 'ETL gagal: ' . $friendlyMessage
@@ -309,7 +309,7 @@ class PermohonanController extends Controller
             $rawMessage = $e->getMessage();
             $friendlyMessage = 'Terjadi kesalahan saat proses ETL.';
 
-            // ✅ Ambil HANYA message dari JSON Google API jika ada
+            // Ambil HANYA message dari JSON Google API jika ada
             if (str_contains($rawMessage, '{')) {
                 $jsonPart = substr($rawMessage, strpos($rawMessage, '{'));
                 $decoded = json_decode($jsonPart, true);
@@ -325,7 +325,7 @@ class PermohonanController extends Controller
                 $friendlyMessage = $rawMessage;
             }
 
-            // ✅ TRANSLATE ERROR KE BAHASA INDONESIA
+            // TRANSLATE ERROR KE BAHASA INDONESIA
             $translations = [
                 'Requested entity was not found.' => 'Data tidak ditemukan. Pastikan ID Spreadsheet dan nama Sheet sudah benar.',
                 'Not Found' => 'Data tidak ditemukan.',
@@ -341,7 +341,7 @@ class PermohonanController extends Controller
                 $friendlyMessage = $translations[$friendlyMessage];
             }
 
-            // ✅ KIRIM KE BLADE DALAM BAHASA INDONESIA
+            // KIRIM KE BLADE DALAM BAHASA INDONESIA
             return redirect()->back()->with(
                 'error',
                 'ETL gagal: ' . $friendlyMessage
@@ -462,7 +462,7 @@ class PermohonanController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // 1. SET HEADER
+        // SET HEADER
         // Struktur kolom digeser karena ada penambahan No. Registrasi di B
         $headers = [
             'A' => 'No.',
@@ -508,7 +508,7 @@ class PermohonanController extends Controller
             }
         }
 
-        // 2. ISI DATA
+        // ISI DATA
         $row = 2;
         foreach ($data as $index => $item) {
             // A: No Urut
@@ -585,7 +585,7 @@ class PermohonanController extends Controller
             $row++;
         }
 
-        // 3. DOWNLOAD
+        // DOWNLOAD
         $writer = new Xlsx($spreadsheet);
         $response = new StreamedResponse(function () use ($writer) {
             $writer->save('php://output');
@@ -599,9 +599,7 @@ class PermohonanController extends Controller
         return $response;
     }
 
-    // ==================================================================
-    // 4. EXPORT PDF
-    // ==================================================================
+    // EXPORT PDF
     public function exportPdf(Request $request)
     {
         $query = $this->getFilteredQuery($request);
@@ -613,9 +611,7 @@ class PermohonanController extends Controller
         return $pdf->download('Laporan-Permohonan-' . date('d-m-Y') . '.pdf');
     }
 
-    // ==================================================================
-    // 5. PRINT VIEW (HTML)
-    // ==================================================================
+    // PRINT VIEW (HTML)
     public function printView(Request $request)
     {
         $query = $this->getFilteredQuery($request);

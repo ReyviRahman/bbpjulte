@@ -54,7 +54,7 @@ class SkmController extends Controller
             'sangat baik'        => 4,
             'baik'               => 3,
 
-            default              => null, // kalau ada nilai aneh, biar ketahuan
+            default              => null,
         };
     }
 
@@ -231,7 +231,7 @@ class SkmController extends Controller
             $rawMessage = $e->getMessage();
             $friendlyMessage = 'Terjadi kesalahan saat proses ETL.';
 
-            // ✅ Ambil HANYA message dari JSON Google API jika ada
+            //  Ambil HANYA message dari JSON Google API jika ada
             if (str_contains($rawMessage, '{')) {
                 $jsonPart = substr($rawMessage, strpos($rawMessage, '{'));
                 $decoded = json_decode($jsonPart, true);
@@ -247,7 +247,7 @@ class SkmController extends Controller
                 $friendlyMessage = $rawMessage;
             }
 
-            // ✅ TRANSLATE ERROR KE BAHASA INDONESIA
+            //  TRANSLATE ERROR KE BAHASA INDONESIA
             $translations = [
                 'Requested entity was not found.' => 'Data tidak ditemukan. Pastikan ID Spreadsheet dan nama Sheet sudah benar.',
                 'Not Found' => 'Data tidak ditemukan.',
@@ -263,7 +263,7 @@ class SkmController extends Controller
                 $friendlyMessage = $translations[$friendlyMessage];
             }
 
-            // ✅ KIRIM KE BLADE DALAM BAHASA INDONESIA
+            //  KIRIM KE BLADE DALAM BAHASA INDONESIA
             return redirect()->back()->with(
                 'error',
                 'ETL gagal: ' . $friendlyMessage
@@ -424,7 +424,7 @@ class SkmController extends Controller
             $rawMessage = $e->getMessage();
             $friendlyMessage = 'Terjadi kesalahan saat proses ETL.';
 
-            // ✅ Ambil HANYA message dari JSON Google API jika ada
+            // Ambil HANYA message dari JSON Google API jika ada
             if (str_contains($rawMessage, '{')) {
                 $jsonPart = substr($rawMessage, strpos($rawMessage, '{'));
                 $decoded = json_decode($jsonPart, true);
@@ -440,7 +440,7 @@ class SkmController extends Controller
                 $friendlyMessage = $rawMessage;
             }
 
-            // ✅ TRANSLATE ERROR KE BAHASA INDONESIA
+            // TRANSLATE ERROR KE BAHASA INDONESIA
             $translations = [
                 'Requested entity was not found.' => 'Data tidak ditemukan. Pastikan ID Spreadsheet dan nama Sheet sudah benar.',
                 'Not Found' => 'Data tidak ditemukan.',
@@ -456,7 +456,7 @@ class SkmController extends Controller
                 $friendlyMessage = $translations[$friendlyMessage];
             }
 
-            // ✅ KIRIM KE BLADE DALAM BAHASA INDONESIA
+            // KIRIM KE BLADE DALAM BAHASA INDONESIA
             return redirect()->back()->with(
                 'error',
                 'ETL gagal: ' . $friendlyMessage
@@ -467,7 +467,7 @@ class SkmController extends Controller
     /**
      * Menampilkan daftar semua pengaduan dengan filter, search, dan sort.
      */
-    // --- 1. FUNGSI UTAMA (INDEX) ---
+    // --- FUNGSI UTAMA (INDEX) ---
     public function index(Request $request)
     {
         $this->etl2023();
@@ -482,18 +482,18 @@ class SkmController extends Controller
         return view('admin.skm.index', compact('semua_skm'));
     }
 
-    // --- 2. FUNGSI EXPORT EXCEL ---
+    // --- FUNGSI EXPORT EXCEL ---
     public function exportExcel(Request $request)
     {
-        // 1. Ambil data menggunakan filter yang SAMA
+        // Ambil data menggunakan filter yang SAMA
         $query = $this->getFilteredQuery($request);
         $data = $query->get(); // Ambil semua data (tanpa pagination)
 
-        // 2. Setup Spreadsheet
+        // Setup Spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // 3. Define Headers
+        // Define Headers
         $headers = [
             'A' => 'No',
             'B' => 'Tanggal',
@@ -518,7 +518,7 @@ class SkmController extends Controller
             'U' => 'Status'
         ];
 
-        // 4. Set Header & Styling
+        // Set Header & Styling
         foreach ($headers as $col => $text) {
             $sheet->setCellValue($col . '1', $text);
             $sheet->getStyle($col . '1')->getFont()->setBold(true);
@@ -529,7 +529,7 @@ class SkmController extends Controller
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // 5. Isi Data
+        //  Isi Data
         $row = 2;
         foreach ($data as $index => $item) {
             $sheet->setCellValue('A' . $row, $index + 1);

@@ -20,7 +20,7 @@ class PengaduanController extends Controller
     /**
      * Menampilkan daftar semua pengaduan dengan filter, search, dan sort.
      */
-    // --- 1. FUNGSI UTAMA (INDEX) ---
+    // --- FUNGSI UTAMA (INDEX) ---
     public function index(Request $request)
     {
         // Panggil fungsi filter (Refactoring)
@@ -32,18 +32,18 @@ class PengaduanController extends Controller
         return view('admin.pengaduan.index', compact('semua_pengaduan'));
     }
 
-    // --- 2. FUNGSI EXPORT EXCEL ---
+    // ---  FUNGSI EXPORT EXCEL ---
     public function exportExcel(Request $request)
     {
-        // 1. Ambil data menggunakan filter yang SAMA dengan index
+        //  Ambil data menggunakan filter yang SAMA dengan index
         $query = $this->getFilteredQuery($request);
         $data = $query->get(); // Ambil semua data (get), bukan paginate
 
-        // 2. Setup Spreadsheet
+        //  Setup Spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // 3. Header Kolom
+        //  Header Kolom
         $headers = ['No', 'Tanggal', 'Nama Pengadu', 'Instansi', 'Kontak', 'Isi Aduan', 'Bukti', 'Status'];
         $columnLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
@@ -64,7 +64,7 @@ class PengaduanController extends Controller
             }
         }
 
-        // 4. Isi Data
+        //  Isi Data
         $row = 2;
         foreach ($data as $index => $item) {
             // A: No
@@ -117,7 +117,7 @@ class PengaduanController extends Controller
             $row++;
         }
 
-        // 5. Download Response
+        //  Download Response
         $writer = new Xlsx($spreadsheet);
         $fileName = 'Laporan-Pengaduan-' . date('d-m-Y-His') . '.xlsx';
 

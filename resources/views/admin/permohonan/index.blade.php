@@ -115,6 +115,10 @@
                                         <div class="dropdown-item" onclick="selectOption('custom', 'Rentang Kustom')">Rentang Kustom</div>
                                     </div>
                                 </div>
+
+                                <input type="number" name="year" class="filter-input" style="width: 100px;"
+                value="{{ request('year', date('Y')) }}" placeholder="Tahun">
+                
                                 <div id="customDateWrapper" 
                                     class="items-center gap-2 {{ request('date_filter') == 'custom' ? 'flex' : 'hidden' }}">
                                     

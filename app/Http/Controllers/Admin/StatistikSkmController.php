@@ -86,6 +86,7 @@ class StatistikSkmController extends Controller
         $startDate = $range['start'];
         $endDate   = $range['end'];
 
+        // Query Data
         $query = Skm::whereBetween('created_at', [$startDate, $endDate])->where('status', '!=', 'Privat');
 
         // Ambil input triwulan + tahun
@@ -93,7 +94,7 @@ class StatistikSkmController extends Controller
 
         $totalResponden = $query->count();
 
-        // 1. SIAPKAN WHITELIST (Daftar Layanan Valid)
+        // SIAPKAN WHITELIST (Daftar Layanan Valid)
         // Ambil semua kategori dari Master Data
         $masterSkm = FormSkm::with('subs')->get();
 
@@ -107,7 +108,7 @@ class StatistikSkmController extends Controller
         $allValidServices = array_merge($validParents, $validSubs);
 
 
-        // 2. QUERY DENGAN FILTER
+        // QUERY DENGAN FILTER
         $layananTerbanyak = Skm::select('layanan_didapat', DB::raw('count(*) as total'))
             ->whereBetween('created_at', [$startDate, $endDate])
             
@@ -145,16 +146,13 @@ class StatistikSkmController extends Controller
             $jumlahDataPerAspek[] = (clone $query)->avg($field) ?? 0;
         }
 
-        // ==========================================================================
-        // 3. CHART JENIS KELAMIN (ANTI TYPO / SPASI)
-        // ==========================================================================
+        //  CHART JENIS KELAMIN (ANTI TYPO / SPASI)
         
-        // A. Ambil Master Data
+        //Ambil Data gender
         $masterGender = \App\Models\FormSkm::where('category', 'Jenis Kelamin')
             ->orderBy('id', 'asc')
             ->get();
 
-        // B. Ambil Raw Data
         $rawGender = (clone $query)
             ->select('jenis_kelamin', DB::raw('count(*) as total'))
             ->whereNotNull('jenis_kelamin')
@@ -162,13 +160,11 @@ class StatistikSkmController extends Controller
             ->groupBy('jenis_kelamin')
             ->get();
 
-        // --- HELPER: PEMBERSIH TEKS ---
-        // Fungsi ini menghapus spasi, strip, dan simbol. "Laki - Laki" menjadi "LAKILAKI"
         $normalizer = function ($str) {
             return strtoupper(preg_replace('/[^a-zA-Z0-9]/', '', $str));
         };
 
-        // C. Mapping (Gunakan Normalizer)
+        // kelompokkan data gender
         $distribusiGender = $masterGender->map(function ($item) use ($rawGender, $normalizer) {
             // Bersihkan nama Master (misal: "Laki-laki" -> "LAKILAKI")
             $masterNameClean = $normalizer($item->name);
@@ -185,19 +181,12 @@ class StatistikSkmController extends Controller
             ];
         });
 
-        // Hasilnya: Walaupun di DB tulisannya aneh-aneh (Laki_laki, Laki - Laki), 
-        // selama huruf penyusunnya sama, akan terhitung.
-
-        // ==========================================================================
         // CHART LOYALITAS / REKOMENDASI (DINAMIS DARI FORM SKM)
-        // ==========================================================================
-
-        // 1. Ambil Master Data
         $masterRekomen = \App\Models\FormSkm::where('category', 'Informasikan Layanan')
             ->orderBy('id', 'asc') 
             ->get();
 
-        // 2. Ambil Raw Data Transaksi
+        // Ambil data informasikan layanan
         $rawRekomen = (clone $query)
             ->select('akan_informasikan_layanan', DB::raw('count(*) as total'))
             ->whereNotNull('akan_informasikan_layanan')
@@ -205,13 +194,11 @@ class StatistikSkmController extends Controller
             ->groupBy('akan_informasikan_layanan')
             ->get();
 
-        // --- HELPER: PEMBERSIH TEKS ---
-        // Menghapus spasi dan simbol, lalu uppercase. Contoh: "Ya " -> "YA"
         $normalizer = function ($str) {
             return strtoupper(preg_replace('/[^a-zA-Z0-9]/', '', $str));
         };
 
-        // 3. Mapping Data
+        // Mapping Data
         $skmRekomen = $masterRekomen->map(function ($item) use ($rawRekomen, $normalizer) {
             // Bersihkan nama Master
             $masterNameClean = $normalizer($item->name);
@@ -291,7 +278,7 @@ class StatistikSkmController extends Controller
             'U9' => 'Kualitas Sarana dan Prasarana'
         ];
 
-        // 3. FORMAT DATA UNTUK CHART (Variabel Baru)
+        // FORMAT DATA UNTUK CHART DI TABEL
         $chartPeringkatLayanan = [];
 
         foreach ($unsur as $key => $kolom) {
@@ -306,7 +293,7 @@ class StatistikSkmController extends Controller
 
         // Hasil akhir tersimpan di variabel: $chartPeringkatTable, $ikmTable, $mutuTable
 
-        // ===== IKM PER TRIWULAN (SEMUA DATA, TIDAK TERPENGARUH FILTER) =====
+        // CHART TREN IKM PER TRIWULAN
         $sumAvgExpr = implode(' + ', array_map(fn($f) => "AVG($f)", $fields));
 
         $ikmRows = Skm::where('status', '!=', 'Privat')
@@ -321,8 +308,7 @@ class StatistikSkmController extends Controller
             ->orderBy('triwulan', 'asc')
             ->get();
 
-        // 1. TAMBAHAN: Query untuk mencari Layanan Terbanyak per Triwulan
-        // Kita group by tahun, triwulan, dan layanan, lalu hitung jumlahnya
+        //  Query untuk mencari Layanan Terbanyak per Triwulan
         $layananRows = Skm::where('status', '!=', 'Privat')
             ->selectRaw("
                 YEAR(created_at) as tahun,
@@ -334,8 +320,7 @@ class StatistikSkmController extends Controller
             ->orderBy('total_layanan', 'desc') // Urutkan dari yang terbanyak
             ->get();
 
-        // 2. Buat Lookup Array: [Tahun][Triwulan] => 'Nama Layanan'
-        // Karena query sudah di-order by desc, data pertama yang masuk array adalah yang terbanyak (Mode)
+        // Buat Lookup Array: [Tahun][Triwulan] => 'Nama Layanan'
         $topLayananLookup = [];
         foreach ($layananRows as $row) {
             $t = (int)$row->tahun;
@@ -396,10 +381,7 @@ class StatistikSkmController extends Controller
             $ikmSeries[$tw][$idx] = ((int)$r->total > 0) ? round((float)$r->ikm, 2) : null;
         }
 
-        // ======================
-        // CHART: SNILAI (LINE) + DRILLDOWN DISTRIBUSI (COLUMN %)
-        // ======================
-
+        // CHART DISTRIBUSI UNSUR PELAYANAN
         $distUnsur = [];
         foreach ($unsur as $u => $kolom) {
             $c1 = (clone $query)->where($kolom, 1)->count();
@@ -444,17 +426,13 @@ class StatistikSkmController extends Controller
         }
 
         // DONUT CHART PENDIDIKAN
-        // ==========================================================================
-        // 1. CHART PENDIDIKAN (DINAMIS DARI FORM SKM)
-        // ==========================================================================
-
-        // A. Ambil Master Data Pendidikan
+        // Data Pendidikan
         // Pastikan di tabel form_skm nama category-nya 'Pendidikan Terakhir' (sesuaikan jika beda)
         $masterPendidikan = FormSkm::where('category', 'Pendidikan Terakhir')
             ->orderBy('id', 'asc') 
             ->get();
 
-        // B. Ambil Raw Data Pendidikan dari Transaksi
+        // Data Pendidikan 
         $rawPendidikan = (clone $query)
             ->select('pendidikan', DB::raw('count(*) as total'))
             ->whereNotNull('pendidikan')
@@ -465,7 +443,7 @@ class StatistikSkmController extends Controller
         // Hitung Total Keseluruhan Data Pendidikan
         $grandTotalPendidikan = $rawPendidikan->sum('total');
 
-        // C. Mapping Data (Master vs Raw)
+        // kelompokkan data pendidikan
         $skmPerPendidikan = $masterPendidikan->map(function ($item) use ($rawPendidikan) {
             $masterName = strtoupper(trim($item->name));
             
@@ -480,7 +458,7 @@ class StatistikSkmController extends Controller
             ];
         });
 
-        // D. Hitung Sisa untuk Kategori "Lainnya"
+        // Hitung Sisa untuk Kategori "Lainnya"
         $matchedPendidikan = $skmPerPendidikan->sum('total');
         $sisaPendidikan    = $grandTotalPendidikan - $matchedPendidikan;
 
@@ -494,17 +472,12 @@ class StatistikSkmController extends Controller
         // Urutkan dari terbanyak
         $skmPerPendidikan = $skmPerPendidikan->sortByDesc('total')->values();
 
-
-        // ==========================================================================
-        // 2. CHART PROFESI / PEKERJAAN (DINAMIS DARI FORM SKM)
-        // ==========================================================================
-
-        // A. Ambil Master Data Pekerjaan
-        // Cek database kamu, biasanya category-nya bernama 'Pekerjaan' atau 'Profesi'
+        // CHART PROFESI / PEKERJAAN (DINAMIS DARI FORM SKM)
+        // Ambil Master Data Pekerjaan
         $masterProfesi = \App\Models\FormSkm::where('category', 'Profesi') 
             ->get();
 
-        // B. Ambil Raw Data Profesi dari Transaksi
+        // Ambil Data Profesi
         $rawProfesi = (clone $query)
             ->select('profesi', DB::raw('count(*) as total'))
             ->whereNotNull('profesi')
@@ -515,7 +488,7 @@ class StatistikSkmController extends Controller
         // Hitung Total Keseluruhan Data Profesi
         $grandTotalProfesi = $rawProfesi->sum('total');
 
-        // C. Mapping Data
+        //Mapping Data
         $skmPerProfesi = $masterProfesi->map(function ($item) use ($rawProfesi) {
             $masterName = strtoupper(trim($item->name));
             
@@ -529,7 +502,7 @@ class StatistikSkmController extends Controller
             ];
         });
 
-        // D. Hitung Sisa "Lainnya"
+        // Hitung "Lainnya"
         $matchedProfesi = $skmPerProfesi->sum('total');
         $sisaProfesi    = $grandTotalProfesi - $matchedProfesi;
 
@@ -543,13 +516,12 @@ class StatistikSkmController extends Controller
         // Urutkan dari terbanyak
         $skmPerProfesi = $skmPerProfesi->sortByDesc('total')->values();
 
-        // 1. Ambil Master Data
-        // Pastikan nama category di DB adalah 'Pungutan'
+        //CHART DISTRIBUSI PUNGUTAN
+        // Ambil Data pungutan
         $masterPungutan = FormSkm::where('category', 'Pungutan')
             ->orderBy('id', 'asc') 
             ->get();
 
-        // 2. Ambil Raw Data Transaksi
         $rawPungutan = (clone $query)
             ->select('ada_pungutan', DB::raw('count(*) as total'))
             ->whereNotNull('ada_pungutan')
@@ -557,12 +529,11 @@ class StatistikSkmController extends Controller
             ->groupBy('ada_pungutan')
             ->get();
 
-        // --- HELPER NORMALIZER ---
         $normalizer = function ($str) {
             return strtoupper(preg_replace('/[^a-zA-Z0-9]/', '', $str));
         };
 
-        // 3. Mapping Data
+        // kelompokkan data
         $skmPungutan = $masterPungutan->map(function ($item) use ($rawPungutan, $normalizer) {
             $masterNameClean = $normalizer($item->name);
 
@@ -576,29 +547,8 @@ class StatistikSkmController extends Controller
             ];
         });
 
-        // 1. QUERY AGREGAT (TIDAK DIUBAH)
-        $agg = (clone $query)
-            ->select('layanan_didapat')
-            ->selectRaw('COUNT(*) as total');
-
-        foreach ($fields as $i => $col) {
-            $u = $i + 1;
-            $agg->selectRaw("SUM(CASE WHEN $col BETWEEN 1 AND 4 THEN $col ELSE 0 END) as U{$u}_sum");
-            $agg->selectRaw("SUM(CASE WHEN $col = 1 THEN 1 ELSE 0 END) as U{$u}_n1");
-            $agg->selectRaw("SUM(CASE WHEN $col = 2 THEN 1 ELSE 0 END) as U{$u}_n2");
-            $agg->selectRaw("SUM(CASE WHEN $col = 3 THEN 1 ELSE 0 END) as U{$u}_n3");
-            $agg->selectRaw("SUM(CASE WHEN $col = 4 THEN 1 ELSE 0 END) as U{$u}_n4");
-            $agg->selectRaw("SUM(CASE WHEN $col BETWEEN 1 AND 4 THEN 1 ELSE 0 END) as U{$u}_valid");
-        }
-
-        $rows = $agg->groupBy('layanan_didapat')
-            ->orderByDesc('total')
-            ->get();
-
-
-        // ==========================================================================
-        // 2. PERBAIKAN: AMBIL KATEGORI DARI FORM SKM
-        // ==========================================================================
+        
+        // AMBIL KATEGORI DARI FORM SKM
         
         // Setup Mapping & Default Parent
         $mapChildToParent = [];
@@ -622,10 +572,24 @@ class StatistikSkmController extends Controller
         // Warna khusus untuk label Lainnya (ikut default parent)
         $subServiceColors['Lainnya'] = $subServiceColors[$defaultParentName] ?? '#666666';
 
+        // QUERY AGREGAT (TIDAK DIUBAH) UNTUK DI CHART UNSUR DAN IKM TIAP KATEGORI 
+        $agg = (clone $query)
+            ->select('layanan_didapat')
+            ->selectRaw('COUNT(*) as total');
 
-        // ==========================================================================
-        // 3. PROSES PENGELOMPOKAN DATA
-        // ==========================================================================
+        foreach ($fields as $i => $col) {
+            $u = $i + 1;
+            $agg->selectRaw("SUM(CASE WHEN $col BETWEEN 1 AND 4 THEN $col ELSE 0 END) as U{$u}_sum");
+            $agg->selectRaw("SUM(CASE WHEN $col = 1 THEN 1 ELSE 0 END) as U{$u}_n1");
+            $agg->selectRaw("SUM(CASE WHEN $col = 2 THEN 1 ELSE 0 END) as U{$u}_n2");
+            $agg->selectRaw("SUM(CASE WHEN $col = 3 THEN 1 ELSE 0 END) as U{$u}_n3");
+            $agg->selectRaw("SUM(CASE WHEN $col = 4 THEN 1 ELSE 0 END) as U{$u}_n4");
+            $agg->selectRaw("SUM(CASE WHEN $col BETWEEN 1 AND 4 THEN 1 ELSE 0 END) as U{$u}_valid");
+        }
+
+        $rows = $agg->groupBy('layanan_didapat')
+            ->orderByDesc('total')
+            ->get();
 
         $rowsByLayanan = [];
         $totalTop = [];      // Total per Parent (Main Chart)
@@ -676,23 +640,11 @@ class StatistikSkmController extends Controller
             $rowsByLayanan['Lainnya'] = new \Illuminate\Support\Fluent($attributes);
         }
 
-        // Helper ID (Tetap dipertahankan)
-        $idMap = [];
-        $makeId = function (string $prefix, string $name) use (&$idMap) {
-            $key = $prefix . '|' . $name;
-            if (!isset($idMap[$key])) {
-                $idMap[$key] = $prefix . '_' . \Illuminate\Support\Str::slug($name, '_') . '_' . substr(md5($name), 0, 6);
-            }
-            return $idMap[$key];
-        };
-
         $kategoriLayananMainSeries = [];
         $kategoriLayananDrillSeries = [];
 
 
-        // ==========================================================================
-        // 4. KONSTRUKSI MAIN CHART & DRILLDOWN LEVEL 1 (DAFTAR LAYANAN)
-        // ==========================================================================
+        // KONSTRUKSI MAIN CHART & DRILLDOWN LEVEL 1 (DAFTAR LAYANAN)
         
         // Loop Master SKM agar urutan grafik sesuai Database
         foreach ($masterSkm as $parent) {
@@ -706,6 +658,15 @@ class StatistikSkmController extends Controller
             
             // Logic Drilldown: Aktif jika punya Sub ATAU item di dalamnya lebih dari 1
             $enableListDrill = ($hasSub || count($childList) > 1);
+
+            $idMap = [];
+            $makeId = function (string $prefix, string $name) use (&$idMap) {
+                $key = $prefix . '|' . $name;
+                if (!isset($idMap[$key])) {
+                    $idMap[$key] = $prefix . '_' . \Illuminate\Support\Str::slug($name, '_') . '_' . substr(md5($name), 0, 6);
+                }
+                return $idMap[$key];
+            };
 
             // Jika item cuma 1 dan namanya sama dengan parent (Layanan Tunggal / Excluded style), 
             // maka drilldown langsung ke U1-U9 (svc), bukan ke list (grp)
@@ -724,7 +685,7 @@ class StatistikSkmController extends Controller
                 'color'     => $serviceColors[$pName] ?? null
             ];
 
-            // --- DRILLDOWN LEVEL 1 (LIST LAYANAN) ---
+            // --- DRILLDOWN (LIST LAYANAN) distribusi unsur tiap kategori layanan ---
             if ($enableListDrill) {
                 arsort($childList); // Urutkan terbanyak
                 $listData = [];
@@ -746,12 +707,7 @@ class StatistikSkmController extends Controller
             }
         }
 
-
-        // ==========================================================================
-        // 5. DRILLDOWN LEVEL 2: U1..U9 (LOGIKA ASLI TETAP DIPERTAHANKAN)
-        // ==========================================================================
-        // Loop ini memproses $rowsByLayanan yang sudah berisi data asli + data "Lainnya"
-
+        // DRILLDOWN U1..U9 distribusi unsur tiap kategori layanan
         foreach ($rowsByLayanan as $layanan => $r) {
             $idSvc = $makeId('svc', $layanan);
 
@@ -799,11 +755,7 @@ class StatistikSkmController extends Controller
         }
 
 
-        // ==========================================================================
-        // 4. LOGIKA BARU: CHART IKM (WITH "LAINNYA" GROUPING)
-        // ==========================================================================
-
-        // A. Helper Hitung IKM
+        //CHART IKM (WITH "LAINNYA" GROUPING)
         $fnHitungIKM = function ($sums, $valids) {
             $totalAvg = 0;
             for ($u = 1; $u <= 9; $u++) {
@@ -817,8 +769,7 @@ class StatistikSkmController extends Controller
             return round(($totalAvg * 0.111) * 25, 2);
         };
 
-
-        // C. BUAT MAPPING & WARNA
+        // BUAT MAPPING & WARNA
         $mapServiceToParent = []; 
         $parentMeta = []; 
         
@@ -845,9 +796,7 @@ class StatistikSkmController extends Controller
             }
         }
 
-        // --- STEP 1: PENGELOMPOKAN DATA MENTAH (AGGREGATION) ---
-        // Kita butuh array sementara untuk menampung raw data sebelum dihitung IKM-nya
-        // Struktur: $tempChildData['NamaInduk']['NamaLayanan']['sums'/'valids']
+        //  Disrtibusi ikm tiap kategori layanan ---
         $tempChildData = [];
 
         foreach ($rowsByLayanan as $layananName => $r) {
@@ -882,7 +831,7 @@ class StatistikSkmController extends Controller
             }
         }
 
-        // --- STEP 2: HITUNG IKM & SUSUN STRUKTUR CHART ---
+        // HITUNG IKM & SUSUN STRUKTUR CHART ---
         
         $ikmMainSeries  = [];
         $ikmDrillSeries = [];
@@ -904,17 +853,17 @@ class StatistikSkmController extends Controller
 
             // Loop setiap Anak/Sub di dalam Parent ini (termasuk "Lainnya" jika ada)
             foreach ($tempChildData[$pName] as $cName => $cData) {
-                // 1. Hitung IKM si Anak
+                // Hitung IKM si Anak
                 $childScore = $fnHitungIKM($cData['sums'], $cData['valids']);
                 
-                // 2. Masukkan ke list drilldown
+                // Masukkan ke list drilldown
                 $myChildrenData[] = [
                     'name'  => $cName,
                     'y'     => $childScore,
                     'color' => $parentMeta[$pName]['color'] ?? '#9bc6bf' // Warisi warna induk
                 ];
 
-                // 3. Akumulasi ke Total Parent
+                // Akumulasi ke Total Parent
                 for($u=1; $u<=9; $u++) {
                     $parentSums[$u]   = ($parentSums[$u] ?? 0) + $cData['sums'][$u];
                     $parentValids[$u] = ($parentValids[$u] ?? 0) + $cData['valids'][$u];
@@ -1081,9 +1030,7 @@ class StatistikSkmController extends Controller
         $startDate = $range['start'];
         $endDate   = $range['end'];
 
-        // 2. QUERY BASE
-        // =========================
-        // Langsung pakai variabel di atas
+        // ambil data skm
         $skmData = Skm::query()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where('status', '!=', 'Privat')
@@ -2457,7 +2404,7 @@ class StatistikSkmController extends Controller
             case 'pdf':
                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf($spreadsheet);
 
-                // ✅ supaya semua sheet (Sampling + Kuesioner) ikut ke PDF
+                // supaya semua sheet (Sampling + Kuesioner) ikut ke PDF
                 $writer->writeAllSheets();
 
                 return response()->streamDownload(function () use ($writer) {
@@ -2468,7 +2415,7 @@ class StatistikSkmController extends Controller
             case 'print':
                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Html($spreadsheet);
 
-                // ✅ supaya semua sheet ikut ke HTML/Print
+                // supaya semua sheet ikut ke HTML/Print
                 $writer->writeAllSheets();
 
                 $html = $writer->generateHTMLAll();

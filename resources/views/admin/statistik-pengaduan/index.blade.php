@@ -305,12 +305,14 @@
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                 <input type="hidden" name="end_date" value="{{ request('end_date') }}">
 
-                <select name="type" onchange="this.form.submit()"
-                    class="border border-gray-300 py-1 rounded-md filter-input">
-                    <option value="">Pilih Export</option>
-                    <option value="excel">Excel</option>
+                <select name="type" 
+                        onchange="if(this.value) { this.form.submit(); this.value=''; }" 
+                        class="border border-gray-300 py-1 rounded-md filter-input">
+                    
+                    <option value="">Pilih Export</option> <option value="excel">Excel</option>
                     <option value="pdf">PDF</option>
                     <option value="print">Print</option>
+
                 </select>
             </form>
 
@@ -728,7 +730,7 @@
                     }
                 },
 
-                // ✅ GUNAKAN VARIABLE YANG SUDAH DIURUTKAN
+                //  GUNAKAN VARIABLE YANG SUDAH DIURUTKAN
                 colors: orderedProfesiColors,
 
                 legend: {

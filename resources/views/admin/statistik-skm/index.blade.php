@@ -366,12 +366,14 @@
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                 <input type="hidden" name="end_date" value="{{ request('end_date') }}">
 
-                <select name="type" onchange="this.form.submit()"
-                    class="border border-gray-300 py-1 rounded-md filter-input">
-                    <option value="">Pilih Export</option>
-                    <option value="excel">Excel</option>
+                <select name="type" 
+                        onchange="if(this.value) { this.form.submit(); this.value=''; }" 
+                        class="border border-gray-300 py-1 rounded-md filter-input">
+                    
+                    <option value="">Pilih Export</option> <option value="excel">Excel</option>
                     <option value="pdf">PDF</option>
                     <option value="print">Print</option>
+
                 </select>
             </form>
 
@@ -703,6 +705,53 @@
                 </div>
             </div>
 
+            
+            <div class="card">
+                <div class="h-96 relative " data-ikhtisar-wrap>
+                    <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
+                        class="absolute top-[6px] right-0 z-50 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
+                    </button>
+                    {{-- Chart --}}
+                    <div class="w-full h-full pr-4">  {{-- pr-12 = 48px, bisa kamu adjust --}}
+                        <div id="nrrChart" class="w-full h-full"></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="card">
+                <div class="h-96 relative" data-ikhtisar-wrap>
+                    <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
+                        class="absolute top-[10px] right-0 z-50 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
+                    </button>
+                    {{-- Chart --}}
+                    <div class="w-full h-full pr-2">  {{-- pr-12 = 48px, bisa kamu adjust --}}
+                        <div id="distribusiKepuasanChart" class="w-full h-full"></div>
+                    </div>
+
+                    {{-- Ikhtisar --}}
+                    <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
+                        <div class="rounded-xl p-4 card">
+                            <div id="ikhtisarTitleKepuasan" class="font-semibold text-slate-800 ">
+                                DISTRIBUSI UNSUR TIAP KATEGORI LAYANAN
+                            </div>
+
+                            <div id="ikhtisarTotalKepuasan" class="mt-1 text-sm text-slate-600 ">
+                                Total=0
+                            </div>
+
+                            <div id="ikhtisarListKepuasan" class="mt-4 space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
             <div class="card">
                 <div class="h-96 relative" data-ikhtisar-wrap>
                     <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
@@ -729,118 +778,8 @@
                     
                 </div>
             </div>
-            
 
             
-        </div>
-
-        <div class="lg:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="card">
-                <div class="h-96 relative" data-ikhtisar-wrap>
-                    <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
-                        class="absolute top-[10px] right-0 z-50 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
-                    </button>
-                    {{-- Chart --}}
-                    <div class="w-full h-full pr-2">  {{-- pr-12 = 48px, bisa kamu adjust --}}
-                        <div id="distribusiKepuasanChart" class="w-full h-full"></div>
-                    </div>
-
-                    {{-- Ikhtisar --}}
-                    <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
-                        <div class="rounded-xl p-4 card">
-                            <div id="ikhtisarTitleKepuasan" class="font-semibold text-slate-800 ">
-                                DISTRIBUSI KEPUASAN TIAP KATEGORI LAYANAN
-                            </div>
-
-                            <div id="ikhtisarTotalKepuasan" class="mt-1 text-sm text-slate-600 ">
-                                Total=0
-                            </div>
-
-                            <div id="ikhtisarListKepuasan" class="mt-4 space-y-2"></div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="card">
-                <div class="h-96 relative " data-ikhtisar-wrap>
-                    <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
-                        class="absolute top-[6px] right-0 z-50 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
-                    </button>
-                    {{-- Chart --}}
-                    <div class="w-full h-full pr-4">  {{-- pr-12 = 48px, bisa kamu adjust --}}
-                        <div id="nrrChart" class="w-full h-full"></div>
-                    </div>
-
-                    {{-- Table --}}
-                    <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
-                        <div class="rounded-xl p-4 card">
-                            <div class="font-semibold text-slate-800 ">
-                                RERATA UNSUR PELAYANAN
-                            </div>
-
-                            <div class="mt-1 text-sm text-slate-600 ">
-                                Skala 1–4
-                            </div>
-
-                            <div class="mt-4 space-y-2">
-                                @php 
-                                    $hasData = false; 
-
-                                    // 1. Duplikasi array agar data asli tidak berubah
-                                    $sortedUnsur = $namaUnsur;
-
-                                    // 2. Logika Sorting: Besar ke Kecil (Descending)
-                                    uksort($sortedUnsur, function($keyA, $keyB) use ($nrr) {
-                                        $valA = (float) ($nrr[$keyA] ?? 0);
-                                        $valB = (float) ($nrr[$keyB] ?? 0);
-                                        
-                                        // Perubahan di sini: B dibandingkan dengan A
-                                        return $valB <=> $valA; 
-                                    });
-                                @endphp
-
-                                {{-- Gunakan $sortedUnsur yang sudah diurutkan --}}
-                                @foreach($sortedUnsur as $k => $nama) 
-                                    @php
-                                        $val = (float) ($nrr[$k] ?? 0);
-
-                                        // 0 tidak tampil
-                                        if ($val <= 0) continue;
-
-                                        $hasData = true;
-                                        
-                                        // Catatan: $loop->index akan mengikuti urutan loop yang baru
-                                        $c = $warnaRerataUnsurPelayanan[0];
-                                        $label = mb_strtoupper($k ?? '', 'UTF-8'); 
-                                        $pct = ($val / 4) * 100;
-                                    @endphp
-
-                                    <div class="flex items-start gap-2">
-                                        <span class="w-3 h-3 rounded-full shrink-0 mt-1" style="background-color: {{ $c }}"></span>
-
-                                        <div class="text-sm text-slate-700 flex-1 min-w-0 break-words">
-                                            <span class="font-semibold">{{ $label }} {{ $nama }}</span>:
-                                            {{ number_format($val, 2) }}
-                                            <span>({{ number_format($pct, 2) }}%)</span>
-                                        </div>
-                                    </div>
-                                @endforeach
-
-                                @if(!$hasData)
-                                    <div class="text-sm text-slate-500">TIDAK ADA DATA.</div>
-                                @endif
-                            </div>
-
-
-                        </div>
-                    </div>
-                </div>
-
-            </div>
             
         </div>
 
@@ -1504,7 +1443,7 @@
                     }
                 },
                 series: [@json($skmPublik), @json($skmPrivat)],
-                labels: ["PUBLIK", "PRIVAT"], // ✅ capslock
+                labels: ["PUBLIK", "PRIVAT"], //  capslock
                 chart: {
                     type: 'donut',
                     height: '100%',
@@ -1590,7 +1529,7 @@
                 plotOptions: {
                     bar: {
                         borderRadius: 4,
-                        horizontal: false,     // ✅ vertical bar
+                        horizontal: false,     //  vertical bar
                         distributed: true,
                         columnWidth: '55%',
                         dataLabels: {
@@ -1617,8 +1556,8 @@
                         },
                         rotate: -45,        // Miringkan 45 derajat
                         rotateAlways: true, // Paksa miring (jangan auto-rotate)
-                        trim: false,        // ✅ PENTING: Matikan pemotongan teks
-                        maxHeight: 140,     // ✅ PENTING: Beri batas tinggi maksimal lebih lega (default biasanya kecil)
+                        trim: false,        //  PENTING: Matikan pemotongan teks
+                        maxHeight: 140,     //  PENTING: Beri batas tinggi maksimal lebih lega (default biasanya kecil)
                         formatter: function (val) {
                             const nama = namaUnsurMap?.[val] || '';
                             return `${val} ${nama}`;
@@ -2142,7 +2081,7 @@
                 }
             };
 
-            // ✅ Render Chart
+            //  Render Chart
             const layananHorizontalChartPerAspek = new ApexCharts(
                 document.querySelector("#rataRataSkorHorizontalChart"),
                 layananHorizontalPerAspekOptions
@@ -2378,7 +2317,7 @@
                     }
                 },
 
-                // ✅ GUNAKAN ARRAY WARNA YANG SUDAH DIURUTKAN TADI
+                //  GUNAKAN ARRAY WARNA YANG SUDAH DIURUTKAN TADI
                 colors: orderedColors,
 
                 legend: {
@@ -2446,7 +2385,7 @@
                     }
                 },
                 
-                // ✅ GUNAKAN VARIABLE YANG SUDAH DIURUTKAN
+                //  GUNAKAN VARIABLE YANG SUDAH DIURUTKAN
                 colors: orderedProfesiColors,
 
                 legend: {
@@ -2604,7 +2543,7 @@
 
 
             // initial ikhtisar
-            renderIkhtisarKepuasan('DISTRIBUSI KEPUASAN TIAP KATEGORI LAYANAN', mainColored, false);
+            renderIkhtisarKepuasan('DISTRIBUSI UNSUR TIAP KATEGORI LAYANAN', mainColored, false);
 
             function extractPointsFromSeries(s) {
                 // prefer points (sudah jadi)
@@ -2624,14 +2563,14 @@
 
                 // ROOT: selalu pakai main (ini yang bikin aman kalau "langsung ke main")
                 if (levels.length === 0) {
-                    renderIkhtisarKepuasan('DISTRIBUSI KEPUASAN TIAP KATEGORI LAYANAN', mainColored, false);
+                    renderIkhtisarKepuasan('DISTRIBUSI UNSUR TIAP KATEGORI LAYANAN', mainColored, false);
                     return;
                 }
 
                 const s = chart.series && chart.series[0];
                 const pts = extractPointsFromSeries(s);
                 const isPercent = s && (s.type === 'column' || s.type === 'bar');
-                const title = (s && s.name) ? `IKHTISAR ${s.name}` : 'DISTRIBUSI KEPUASAN TIAP KATEGORI LAYANAN';
+                const title = (s && s.name) ? `IKHTISAR ${s.name}` : 'DISTRIBUSI UNSUR TIAP KATEGORI LAYANAN';
 
                 renderIkhtisarKepuasan(title, pts, isPercent);
             }
@@ -2657,9 +2596,9 @@
                             const pts = applyColors((so && so.data) ? so.data : []);
                             const isPercent = so && (so.type === 'column' || so.type === 'bar');
 
-                            setYAxisForPercent(this, isPercent); // ✅ set max 100 kalau persen
+                            setYAxisForPercent(this, isPercent); //  set max 100 kalau persen
 
-                            const title = (so && so.name) ? `IKHTISAR ${so.name}` : 'DISTRIBUSI KEPUASAN TIAP KATEGORI LAYANAN';
+                            const title = (so && so.name) ? `IKHTISAR ${so.name}` : 'DISTRIBUSI UNSUR TIAP KATEGORI LAYANAN';
                             renderIkhtisarKepuasan(title, pts, isPercent);
                         },
 
@@ -2679,7 +2618,7 @@
                             const chart = this;
                             setTimeout(() => {
                                 updateIkhtisarFromChart(chart);
-                                setYAxisForPercent(chart, false); // ✅ balik ke normal
+                                setYAxisForPercent(chart, false); //  balik ke normal
                             }, 0);
                         }
                     }
@@ -2696,7 +2635,7 @@
                     }
                 },
                 title: {
-                    text: 'Distribusi Kepuasan tiap Kategori Layanan',
+                    text: 'Distribusi Unsur tiap Kategori Layanan',
                     align: 'left',
                     style: {
                         fontFamily: 'Inter, sans-serif',
@@ -2720,7 +2659,7 @@
                 },
                 exporting: {
                     enabled: true,
-                    filename: "Distribusi Kepuasan tiap Kategori Layanan",
+                    filename: "Distribusi Unsur tiap Kategori Layanan",
                     buttons: {
                         contextButton: {
                             menuItems: [

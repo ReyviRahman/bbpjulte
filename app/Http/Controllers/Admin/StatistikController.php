@@ -60,8 +60,7 @@ class StatistikController extends Controller
         $startDate = $range['start'];
         $endDate   = $range['end'];
 
-        // --- 3. Ambil Master Data (KUNCI PERUBAHAN DISINI) ---
-        // Ambil semua kategori Layanan beserta sub-nya
+        // Ambil semua kategori Layanan beserta sub-nya chart berdasarkan kategori
         $masterCategories = FormPermohonan::where('category', 'Layanan')
             ->with('subs')
             ->get();
@@ -120,6 +119,8 @@ class StatistikController extends Controller
         // 4. Gabungkan Kedua Array
         $semuaLayananValid = array_merge($listInduk, $listSub);
 
+        // --- Hitung Data Untuk Kartu Statistik ---
+        $totalPermohonan = $query->count();
         $topLayananKpi = (clone $query)
             // FILTER: Hanya hitung jika namanya ada di Induk ATAU Sub
             ->whereIn('layanan_dibutuhkan', $semuaLayananValid)
@@ -128,18 +129,13 @@ class StatistikController extends Controller
             ->groupBy('layanan_dibutuhkan')
             ->orderBy('total', 'desc')
             ->value('layanan_dibutuhkan');
-
-        // --- Hitung Data Untuk Kartu Statistik ---
-        $totalPermohonan = $query->count();
-
         $permohonanDiajukan = (clone $query)->where('status', 'Diajukan')->count();
         $permohonanDiproses = (clone $query)->where('status', 'Diproses')->count();
         $permohonanSelesai = (clone $query)->where('status', 'Selesai')->count();
         $permohonanDitolak = (clone $query)->where('status', 'Ditolak')->count();
 
-        // --- 4. Siapkan Data untuk Grafik ---
 
-        // A. Distribusi Status (Donut Chart)
+        // Distribusi Status (Donut Chart)
         $distribusiStatus = (clone $query)
             ->select('status', DB::raw('count(*) as total'))
             ->whereIn('status', ['Selesai', 'Diproses', 'Ditolak', 'Diajukan'])
@@ -147,7 +143,7 @@ class StatistikController extends Controller
             ->get();
 
 
-        // B. Tren Harian (Area Chart)
+        // chart Tren Harian (Area Chart)
         $trenHarian = (clone $query)
             ->select(DB::raw("DATE(created_at) as tanggal"), DB::raw('count(*) as total'))
             ->groupBy('tanggal')
@@ -162,14 +158,14 @@ class StatistikController extends Controller
         $defaultInduk = 'Fasilitasi Bantuan Teknis';
         $defaultSub   = 'Lainnya';
 
-        // Loop Data Transaksi
+        // Chart berdasarkan kategori
         // ... (Bagian atas code tetap sama) ...
         $layananRaw = (clone $query)
             ->select('layanan_dibutuhkan', DB::raw(value: 'count(*) as total'))
             ->groupBy('layanan_dibutuhkan')
             ->get();
 
-        // Loop Data Transaksi
+        // Loop Data kategori
         foreach ($layananRaw as $row) {
             $rawName = $row->layanan_dibutuhkan;
             $total   = (int) $row->total;
@@ -202,7 +198,7 @@ class StatistikController extends Controller
                 }
             }
 
-            // KASUS B: Layanan TIDAK Dikenali sama sekali (Typo/Error)
+            // Layanan TIDAK Dikenali sama sekali (Typo/Error)
             else {
                 // Masuk ke Fasilitasi Bantuan Teknis > Lainnya
                 if (isset($mainCounts[$defaultInduk])) {
@@ -213,9 +209,9 @@ class StatistikController extends Controller
                 }
             }
         }
-        // A. Main Series
+
+        // Drilldown layanan teratas
         // Sort dari terbesar ke terkecil
-        // --- 6. Siapkan Struktur Data Highcharts ---
         arsort($mainCounts);
 
         $finalMainData = [];
@@ -274,9 +270,7 @@ class StatistikController extends Controller
         ]];
 
         // ... (Definisi $serviceColors di atas tetap sama) ...
-
-        // --- 3. Ambil Master Data & Build Color Map ---
-
+        // Ambil Master Data & Build Color Map ---
         $colorMap = [];
         // Kita butuh array ini untuk filter query Top 5 nanti
         $allValidNames = [];
@@ -287,12 +281,12 @@ class StatistikController extends Controller
             // Ambil warna dari array statis kamu. Jika tidak ada, pakai default abu-abu.
             $baseColor = $serviceColors[$indukName] ?? '#cccccc';
 
-            // 1. DAFTARKAN INDUK
+            // DAFTARKAN INDUK
             // PENTING: Gunakan strtoupper() agar cocok dengan logic di View/JS
             $colorMap[strtoupper($indukName)] = $baseColor;
             $allValidNames[] = $indukName;
 
-            // 2. DAFTARKAN ANAK (SUBS)
+            // DAFTARKAN ANAK (SUBS)
             foreach ($cat->subs as $sub) {
                 $subName = $sub->name;
 
@@ -303,7 +297,6 @@ class StatistikController extends Controller
         }
 
         // ... (Lanjut ke query $topLayanan) ...
-
         // Pastikan query Top 5 menggunakan daftar nama yang valid tadi
         $topLayanan = (clone $query)
             ->whereIn('layanan_dibutuhkan', $allValidNames) // Filter data valid
@@ -313,24 +306,14 @@ class StatistikController extends Controller
             ->limit(5)
             ->get();
 
-        // ... (Logic Main Chart & Drilldown di bawahnya menyesuaikan) ...
-
-        // D. Warna Default (Jika tidak ada di list manapun)
+        // Warna Default (Jika tidak ada di list manapun)
         $topLayananDefaultColor = '#5d89b0';
-
-        // ... (Kode $query utama filter tanggal tetap sama) ...
-        // $query = Permohonan::whereBetween('created_at', [$startDate, $endDate]);
-
-        // --- 1. STATISTIK PENDIDIKAN (Dynamic dari Master Data) ---
-
-        // --- 1. STATISTIK PENDIDIKAN ---
-
-        // A. Ambil Master Data
+        // chart pendidikan
         $masterPendidikan = FormPermohonan::where('category', 'Pendidikan Terakhir')
             ->orderBy('id', 'asc')
             ->get();
 
-        // B. Ambil Raw Data
+        // Ambil Raw Data
         $rawPendidikan = (clone $query)
             ->select('pendidikan', DB::raw('count(*) as total'))
             ->whereNotNull('pendidikan')
@@ -338,10 +321,10 @@ class StatistikController extends Controller
             ->groupBy('pendidikan')
             ->get();
 
-        // [LOGIC BARU] Hitung Total Semua Data Pendidikan yg Masuk
+        // Hitung Total Semua Data Pendidikan yg Masuk
         $grandTotalPendidikan = $rawPendidikan->sum('total');
 
-        // C. Gabungkan (Loop Master Data)
+        // Gabungkan data
         $layananPerPendidikan = $masterPendidikan->map(function ($item) use ($rawPendidikan) {
             $masterName = strtoupper(trim($item->name));
 
@@ -355,7 +338,7 @@ class StatistikController extends Controller
             ];
         });
 
-        // [LOGIC BARU] Hitung Sisa (Uncategorized) -> Masukkan ke "Lainnya"
+        // Hitung "Lainnya"
         $matchedTotalPendidikan = $layananPerPendidikan->sum('total');
         $sisaPendidikan = $grandTotalPendidikan - $matchedTotalPendidikan;
 
@@ -366,12 +349,10 @@ class StatistikController extends Controller
             ]);
         }
 
-        // Sorting (Opsional: Lainnya biasanya ditaruh paling bawah, atau ikut sort jumlah)
+        // Sorting pendidikan
         $layananPerPendidikan = $layananPerPendidikan->sortByDesc('total')->values();
 
-
-        // --- 2. STATISTIK PROFESI ---
-
+        // chart PROFESI ---
         $masterProfesi = FormPermohonan::where('category', 'Profesi')
             ->get();
 
@@ -382,7 +363,7 @@ class StatistikController extends Controller
             ->groupBy('profesi')
             ->get();
 
-        // [LOGIC BARU] Grand Total Profesi
+        // Total Profesi
         $grandTotalProfesi = $rawProfesi->sum('total');
 
         $distribusiProfesi = $masterProfesi->map(function ($item) use ($rawProfesi) {
@@ -398,7 +379,7 @@ class StatistikController extends Controller
             ];
         });
 
-        // [LOGIC BARU] Hitung Sisa Profesi -> Masukkan ke "Lainnya"
+        // Hitung profesi "Lainnya"
         $matchedTotalProfesi = $distribusiProfesi->sum('total');
         $sisaProfesi = $grandTotalProfesi - $matchedTotalProfesi;
 
@@ -411,16 +392,11 @@ class StatistikController extends Controller
 
         $distribusiProfesi = $distribusiProfesi->sortByDesc('total')->values();
 
-        // ... (Return View tetap sama) ...
-
-
-        // --- 3. STATISTIK JENIS KELAMIN (Dynamic dari Master Data) ---
-        // A. Ambil Master Data
+        // Chart JENIS KELAMIN
         $masterGender = FormPermohonan::where('category', 'Jenis Kelamin')
             ->orderBy('id', 'asc')
             ->get();
 
-        // B. Ambil Raw Data dari Transaksi
         $rawGender = (clone $query)
             ->select('jenis_kelamin', DB::raw('count(*) as total'))
             ->whereNotNull('jenis_kelamin')
@@ -428,7 +404,7 @@ class StatistikController extends Controller
             ->groupBy('jenis_kelamin')
             ->get();
 
-        // C. Gabungkan (Mapping)
+        // Gabungkan per gender
         $distribusiGender = $masterGender->map(function ($item) use ($rawGender) {
             $masterName = strtoupper(trim($item->name));
 
@@ -561,22 +537,18 @@ class StatistikController extends Controller
         $startDate = $range['start'];
         $endDate   = $range['end'];
 
-        // =========================
-        // 2. QUERY BASE
-        // =========================
+        // QUERY permohonan export
         // Langsung pakai variabel di atas
         $base = Permohonan::query()->whereBetween('created_at', [$startDate, $endDate]);
         $total = (int) (clone $base)->count();
 
-        // GROUPING (agar hemat)
+        // GROUPING
         $jkRows   = (clone $base)->selectRaw('jenis_kelamin as label, COUNT(*) as total')->groupBy('jenis_kelamin')->get();
         $pendRows = (clone $base)->selectRaw('pendidikan as label, COUNT(*) as total')->groupBy('pendidikan')->get();
         $profRows = (clone $base)->selectRaw('profesi as label, COUNT(*) as total')->groupBy('profesi')->get();
         $layRows  = (clone $base)->selectRaw('layanan_dibutuhkan as label, COUNT(*) as total')->groupBy('layanan_dibutuhkan')->get();
 
-        // =========================
         // ORDER KATEGORI
-        // =========================
         $genderOrder = ['Laki-Laki', 'Perempuan'];
         $eduOrder    = ['SD ke Bawah', 'SLTP/SMP', 'SLTA/SMA', 'D/III', 'S1', 'S2', 'S3', 'Lainnya'];
         $jobOrder    = ['PNS', 'PPPK', 'TNI/POLRI', 'Swasta', 'Wirausaha', 'Mahasiswa', 'Siswa', 'Lainnya'];
@@ -623,9 +595,7 @@ class StatistikController extends Controller
             'Lainnya',
         ];
 
-        // =========================
-        // BUILD DISTRIBUSI
-        // =========================
+        // tabel jenis kelamin
         $genderBucket = array_fill_keys($genderOrder, 0);
         foreach ($jkRows as $r) {
             $v = strtolower((string)($r->label ?? ''));
@@ -678,7 +648,7 @@ class StatistikController extends Controller
         };
 
         $eduBucket = $buildDistribution($pendRows, $eduOrder);
-        // 2. Fungsi Build Distribution Khusus Profesi
+        // Fungsi Build Distribution Khusus Profesi
         $buildJobDistribution = function ($rows, array $order) {
             // Siapkan wadah (bucket) dengan nilai awal 0
             $bucket = array_fill_keys($order, 0);
@@ -727,8 +697,8 @@ class StatistikController extends Controller
             return $bucket;
         };
 
-        // 3. Eksekusi
-        // Pastikan variabel $profRows adalah hasil query grouping profesi Anda
+        // Eksekusi
+        // Pastikan variabel $profRows adalah hasil query grouping profesi
         $jobBucket = $buildJobDistribution($profRows, $jobOrder);
 
         $serviceBucket = array_fill_keys($serviceOrder, 0);
