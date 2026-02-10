@@ -78,16 +78,22 @@
                 @enderror
             </div>
             <div class="form-group full-width no-top-border">
-                    <label>Verifikasi Keamanan *</label>
-                    {{-- Div ini otomatis jadi checkbox "I'm not a robot" --}}
-                    <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
-                    {{-- Pesan Error --}}
-                    @error('g-recaptcha-response')
-                        <div class="error-message text-red-600 text-sm mt-1">
-                            {{ $message }}
-                        </div>
-                    @enderror
+                <label>Verifikasi Keamanan *</label>
+
+                {{-- Div ini otomatis jadi checkbox "I'm not a robot" --}}
+                <div class="flex itmes-center gap-2">
+                    <div class="captcha-image">{!! captcha_img('math') !!}</div>
+                    <input type="number" name="captcha" id="captcha" class="form-input"
+                        value="{{ old('captcha') }}" placeholder="Masukkan Jawaban...">
                 </div>
+
+                {{-- Pesan Error --}}
+                @error('captcha')
+                    <div class="error-message text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
             <button type="submit" class="submit-button">Lacak Sekarang</button>
         </form>
     </div>

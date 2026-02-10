@@ -25,20 +25,10 @@ class StatusLayananController extends Controller
         // Validasi input dari pengguna
         $request->validate([
             'no_registrasi' => 'required|string|exists:permohonans,no_registrasi',
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => env('RECAPTCHA_SECRET_KEY'),
-                    'response' => $value,
-                    'remoteip' => request()->ip(),
-                ]);
-
-                // Jika Google bilang "False" (gagal), maka tampilkan error
-                if (!$gResponse->json('success')) {
-                    $fail('Verifikasi robot gagal, silakan coba lagi.');
-                }
-            }]
+            'captcha' => 'required|captcha',
         ], [
-            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
+            'captcha.required' => 'Wajib mengisi jawaban.',
+            'captcha.captcha' => 'Jawaban salah, silakan coba lagi.',
             'no_registrasi.required' => 'Nomor registrasi wajib diisi.',
             'no_registrasi.exists' => 'Nomor registrasi tidak ditemukan di sistem kami. Mohon periksa kembali.',
         ]);

@@ -1,14 +1,14 @@
 @extends('layouts.public')
 
-@section('title', 'Permohonan Berhasil Terkirim')
+{{-- Judul Tab Browser dinamis --}}
+@section('title', (isset($permohonan) && $permohonan) ? 'Permohonan Berhasil Terkirim' : 'Terima Kasih')
 
 @push('styles')
     <style>
-        /* CSS ini HANYA berlaku untuk elemen di dalam halaman ini, tidak lagi mengatur body */
+        /* Style tetap sama seperti sebelumnya */
         .success-container {
             max-width: 700px;
             margin: 2em auto;
-            /* Beri jarak dari header */
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -21,7 +21,7 @@
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
-            background-color: #F59E0B;
+            background-color: #28a745;
             color: white;
             text-align: center;
         }
@@ -89,24 +89,14 @@
         }
 
         .btn-toggle {
-            background-color: #F59E0B;
-            /* Warna Asli (Orange Terang) */
-            border-color: #F59E0B;
+            background-color: #28a745;
+            border-color: #28a745;
             width: 100%;
-            color: white;
-            /* Pastikan teks putih biar kontras */
-            cursor: pointer;
-            /* Ubah kursor jadi tangan */
-            transition: all 0.3s ease;
-            /* Efek transisi halus */
         }
 
         .btn-toggle:hover {
-            background-color: #d97706;
-            /* Warna Hover (Orange Lebih Gelap) */
-            border-color: #d97706;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            /* Opsional: Tambah bayangan sedikit */
+            background-color: #218838;
+            border-color: #1e7e34;
         }
 
         .data-recap-wrapper {
@@ -146,10 +136,28 @@
             word-break: break-word;
         }
 
+        .download-button {
+            margin-top: 1.5rem;
+            background-color: #dc2626;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .download-button:hover {
+            background-color: #b91c1c;
+        }
+
         @media (max-width: 768px) {
             .data-recap dl {
                 grid-template-columns: 1fr;
-                /* Ubah jadi 1 kolom di layar kecil */
                 gap: 5px;
             }
 
@@ -163,40 +171,80 @@
 
 @section('content')
     <div class="success-container">
-        {{-- Header dengan Ikon Tanda Seru Kuning --}}
+        
+        {{-- BAGIAN HEADER --}}
         <div class="confirmation-header" style="text-align: center">
-            {{-- SVG Exclamation Mark (Warning) --}}
-            <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="80" height="80">
-                <circle cx="26" cy="26" r="25" fill="#FFEF5F" opacity="0.5" /> {{-- Warna Kuning Transparan --}}
-                <path fill="#FFF57E"
-                    d="M26,36c1.1,0,2,0.9,2,2s-0.9,2-2,2s-2-0.9-2-2S24.9,36,26,36z M26,12c1.1,0,2,0.9,2,2v16c0,1.1-0.9,2-2,2 s-2-0.9-2-2V14C24,12.9,24.9,12,26,12z" />
+            <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="25" fill="#FFF" opacity="0.2" />
+                <path fill="#FFF" d="M14.1 27.2l7.1 7.2 16.7-16.8L36 16 21.2 30.8l-5.2-5.2z" />
             </svg>
-            <h2 style="margin-top: 15px;">Selesaikan Permohonan</h2>
+            <h2>
+                @if(isset($permohonan) && $permohonan)
+                    Permohonan Berhasil Terkirim
+                @else
+                    Terima Kasih!
+                @endif
+            </h2>
         </div>
 
+        {{-- BAGIAN PESAN UTAMA --}}
         <div class="message-body">
+            
+            {{-- GREETING --}}
             <p class="greeting">
-                Yth. Bapak/Ibu <strong>{{ $permohonan->nama_lengkap }}</strong>,
+                Yth. Bapak/Ibu/Saudara 
+                <strong>
+                    @if(isset($permohonan) && $permohonan)
+                        {{ $permohonan->nama_lengkap }}
+                    @endif
+                </strong>,
             </p>
 
-            {{-- Paragraf 1 --}}
-            <p style="margin-bottom: 1em;">
-                Saat ini Anda diarahkan untuk mengisi Survei Kepuasan Masyarakat terlebih dahulu. Proses ini digunakan untuk
-                penerbitan nomor registrasi permohonan layanan.
-            </p>
+            {{-- PESAN TEKS --}}
+            @if(isset($permohonan) && $permohonan)
+                {{-- KONTEN LENGKAP JIKA DATA ADA --}}
+                <p>
+                    Terima kasih telah mengajukan permohonan layanan di Balai Bahasa Provinsi Jambi. Permohonan Anda telah kami
+                    terima dan akan segera diproses pada hari dan jam kerja.
+                </p>
 
-            {{-- Paragraf 2 --}}
-            <p style="margin-bottom: 2em;">
-                Nomor registrasi permohonan layanan sangat penting digunakan untuk melacak status permohonan layanan yang
-                Anda ajukan dan menandakan permohonan Anda berhasil terkirim.
-            </p>
+                {{-- KOTAK INFO REGISTRASI (Hanya muncul jika ada permohonan) --}}
+                <div style="margin-top: 2em; padding: 1em; background-color: #eef2ff; border-left: 4px solid #4f46e5; color: #4338ca;">
+                    <h4 style="margin-top: 0; font-weight: bold;">Simpan Nomor Registrasi Anda!</h4>
+                    <p style="margin-bottom: 0.5em;">Gunakan nomor berikut untuk melacak status permohonan Anda di kemudian hari:</p>
+                    
+                    <p style="font-size: 1.2em; font-weight: bold; letter-spacing: 1px;">{{ $permohonan->no_registrasi }}</p>
+                    
+                    <a href="{{ route('status.index') }}" style="font-weight: bold; color: #4338ca; margin-top: 0.5em; display: inline-block;">
+                        Lacak Permohonan Anda Sekarang →
+                    </a>
+                    <br />
+                    
+                    {{-- TOMBOL DOWNLOAD PDF --}}
+                    <a href="{{ route('permohonan.downloadPDF', $permohonan) }}" class="download-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Unduh PDF</span>
+                    </a>
+                </div>
 
-            {{-- Tombol Survei (Langsung di bawah Paragraf 2) --}}
-            <div style="text-align: center; margin-bottom: 3em;">
-                {{-- Asumsi variabel di halaman ini adalah $permohonan --}}
-                <a href="{{ route('skm.create', ['permohonan_id' => $permohonan->id]) }}" class="btn btn-survey"
-                    style="background-color: #F59E0B; border-color: #F59E0B; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                    Isi Survei Kepuasan Masyarakat
+            @else
+                {{-- KONTEN STANDAR JIKA TIDAK ADA DATA (Cuma isi SKM) --}}
+                <p>
+                    Terima kasih telah meluangkan waktu untuk mengisi Survei Kepuasan Masyarakat. Masukan Anda sangat berharga bagi kami untuk terus meningkatkan kualitas pelayanan di Balai Bahasa Provinsi Jambi.
+                </p>
+                <p>
+                    Semoga hari Anda menyenangkan!
+                </p>
+            @endif
+
+            <br />
+            
+            {{-- TOMBOL BERANDA --}}
+            <div style="text-align: center;">
+                <a href="/" class="btn btn-survey">
+                    Kembali ke Beranda
                 </a>
             </div>
 
@@ -205,8 +253,9 @@
             </div>
         </div>
 
-        {{-- Data Recap (Tetap ada sebagai konfirmasi data yang diinput) --}}
-        <div class="data-recap-wrapper" style="margin-top: 40px;">
+        {{-- BAGIAN DETAIL DATA (Hanya muncul jika ada permohonan) --}}
+        @if(isset($permohonan) && $permohonan)
+        <div class="data-recap-wrapper">
             <button type="button" class="btn btn-toggle" id="toggleDataBtn">Lihat Detail Permohonan Anda</button>
             <div class="data-recap" id="dataRecap">
                 <h3>Detail Data Permohonan</h3>
@@ -234,22 +283,29 @@
                 </dl>
             </div>
         </div>
+        @endif
+        
     </div>
 @endsection
 
 @push('scripts')
+    {{-- Script hanya dirender jika tombol detail ada --}}
+    @if(isset($permohonan) && $permohonan)
     <script>
         const toggleBtn = document.getElementById('toggleDataBtn');
         const dataRecapDiv = document.getElementById('dataRecap');
 
-        toggleBtn.addEventListener('click', function () {
-            if (dataRecapDiv.style.display === 'none' || dataRecapDiv.style.display === '') {
-                dataRecapDiv.style.display = 'block';
-                this.textContent = 'Sembunyikan Detail Permohonan';
-            } else {
-                dataRecapDiv.style.display = 'none';
-                this.textContent = 'Lihat Detail Permohonan Anda';
-            }
-        });
+        if(toggleBtn && dataRecapDiv) {
+            toggleBtn.addEventListener('click', function () {
+                if (dataRecapDiv.style.display === 'none' || dataRecapDiv.style.display === '') {
+                    dataRecapDiv.style.display = 'block';
+                    this.textContent = 'Sembunyikan Detail Permohonan';
+                } else {
+                    dataRecapDiv.style.display = 'none';
+                    this.textContent = 'Lihat Detail Permohonan Anda';
+                }
+            });
+        }
     </script>
+    @endif
 @endpush

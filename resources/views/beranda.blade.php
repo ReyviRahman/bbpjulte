@@ -57,9 +57,9 @@
         </h1>
 
         <p class="text-base md:text-xl my-12 text-gray-600 max-w-3xl mx-auto mb-6">
-            Unit Layanan Terpadu Elektronik (ULT-E) Kantor Bahasa Provinsi Jambi adalah platform digital yang memudahkan
+            Unit Layanan Terpadu Elektronik (ULT-E) Balai Bahasa Provinsi Jambi adalah platform digital yang memudahkan
             masyarakat dalam mengakses berbagai layanan bahasa, seperti pendampingan kebahasaan, penerjemahan, dan pelatihan
-            bahasa, secara online tanpa harus datang ke kantor.
+            bahasa, secara online tanpa harus datang langsung.
         </p>
 
         <a href="{{ route('permohonan.create') }}"
@@ -119,9 +119,9 @@
     <div class="bg-white py-20">
         <div class="max-w-6xl mx-auto px-5 text-center">
             <h2 class="text-3xl font-bold text-slate-800">Standar Pelayanan</h2>
-            <h3 class="text-4xl font-bold text-slate-800 mt-2">Kantor Bahasa Provinsi Jambi</h3>
+            <h3 class="text-4xl font-bold text-slate-800 mt-2">Balai Bahasa Provinsi Jambi</h3>
             <p class="text-lg text-gray-600 max-w-4xl mx-auto mt-4">
-                Unit Layanan Terpadu (ULT) Kantor Bahasa Provinsi Jambi berkomitmen untuk memberikan layanan prima. Melalui
+                Unit Layanan Terpadu (ULT) Balai Bahasa Provinsi Jambi berkomitmen untuk memberikan layanan prima. Melalui
                 laman ini, masyarakat dapat mengakses informasi mengenai alur pengajuan, persyaratan, biaya, dan waktu yang
                 dibutuhkan untuk setiap layanan.
             </p>

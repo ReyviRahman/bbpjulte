@@ -326,10 +326,14 @@
                     <label>Verifikasi Keamanan *</label>
 
                     {{-- Div ini otomatis jadi checkbox "I'm not a robot" --}}
-                    <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                    <div class="flex itmes-center gap-2">
+                        <div class="captcha-image">{!! captcha_img('math') !!}</div>
+                        <input type="number" name="captcha" id="captcha" class="form-input"
+                            value="{{ old('captcha') }}" placeholder="Masukkan Jawaban...">
+                    </div>
 
                     {{-- Pesan Error --}}
-                    @error('g-recaptcha-response')
+                    @error('captcha')
                         <div class="error-message text-red-600 text-sm mt-1">
                             {{ $message }}
                         </div>
@@ -349,16 +353,6 @@
         // Hapus semua script lama di sini
         document.addEventListener('DOMContentLoaded', function () {
             
-            $('#reload-captcha').click(function () {
-                $.ajax({
-                    type: 'GET',
-                    url: '{{ route("captcha.refresh") }}', // Route bawaan package mews
-                    success: function (data) {
-                        $('#captcha-img').html(data.captcha);
-                    }
-                });
-            });
-
             // SweetAlert2 Confirmation
             const submitBtn = document.getElementById('submitBtn');
             const permohonanForm = document.getElementById('permohonanForm');

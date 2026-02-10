@@ -115,20 +115,10 @@ class SkmController extends Controller
             'jenis_pungutan' => 'nullable',
             'akan_informasikan_layanan' => 'required',
             'kritik_saran' => 'required',
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => env('RECAPTCHA_SECRET_KEY'),
-                    'response' => $value,
-                    'remoteip' => request()->ip(),
-                ]);
-
-                // Jika Google bilang "False" (gagal), maka tampilkan error
-                if (!$gResponse->json('success')) {
-                    $fail('Verifikasi robot gagal, silakan coba lagi.');
-                }
-            }]
+            'captcha' => 'required|captcha',
         ], [
-            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
+            'captcha.required' => 'Wajib mengisi jawaban.',
+            'captcha.captcha' => 'Jawaban salah, silakan coba lagi.',
         ]);
 
 

@@ -58,21 +58,10 @@ class PermohonanController extends Controller
             'isi_permohonan' => 'required|string',
             'surat_permohonan' => 'required|file|mimes:pdf|max:2048',
             'berkas_permohonan' => 'nullable|file|mimes:pdf|max:5120',
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => env('RECAPTCHA_SECRET_KEY'),
-                    'response' => $value,
-                    'remoteip' => request()->ip(),
-                ]);
-
-                // Jika Google bilang "False" (gagal), maka tampilkan error
-                if (!$gResponse->json('success')) {
-                    $fail('Verifikasi robot gagal, silakan coba lagi.');
-                }
-            }]
+            'captcha' => 'required|captcha'
         ], [
-            // Custom message khusus jika user lupa mencentang (required)
-            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
+            'captcha.required' => 'Wajib mengisi jawaban.',
+            'captcha.captcha' => 'Jawaban salah, silakan coba lagi.',
         ]);
 
         // 2. Logika untuk menangani input "lainnya"
@@ -113,7 +102,7 @@ class PermohonanController extends Controller
         // PICU EVENT SETELAH DATA BERHASIL DIBUAT
         // event(new PermohonanDibuat($permohonan));
 
-        return redirect()->route('permohonan.sukses', ['permohonan' => $permohonan]);
+        return redirect()->route('permohonan.sukses', ['permohonan' => $permohonan->id]);
     }
 
     public function sukses(Permohonan $permohonan)

@@ -45,7 +45,7 @@ Route::get('/lacak-layanan/{permohonan:no_registrasi}/unduh', [StatusLayananCont
 Route::get('/lacak/{permohonan:no_registrasi}', [StatusLayananController::class, 'show'])->name('status.track');
 
 Route::get('/refresh-captcha', function () {
-    return response()->json(['captcha' => captcha_img('flat')]);
+    return response()->json(['captcha' => captcha_img('math')]);
 })->name('captcha.refresh');
 
 Route::prefix('standar-pelayanan')->name('standar-pelayanan.')->group(function () {
@@ -75,7 +75,6 @@ Route::prefix('standar-pelayanan')->name('standar-pelayanan.')->group(function (
     })->name('kunjungan-edukasi');
 });
 
-
 Route::get('/dashboard', function () {
     if (Auth::user() && Auth::user()->role === 'admin') {
         return redirect()->route('admin.dashboard');
@@ -91,7 +90,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('permohonan', AdminPermohonanController::class)->except(['create', 'store']);
     Route::get('permohonan/{permohonan}/cetak', [AdminPermohonanController::class, 'cetak'])->name('permohonan.cetak');
     Route::get('permohonan/{permohonan}/unduh', [AdminPermohonanController::class, 'unduh'])->name('permohonan.unduh');
-
     
     Route::get('pengaduan/export-excel', [AdminPengaduanController::class, 'exportExcel'])->name('pengaduan.export_excel');
     Route::get('pengaduan/export-pdf', [AdminPengaduanController::class, 'exportPdf'])->name('pengaduan.export_pdf');

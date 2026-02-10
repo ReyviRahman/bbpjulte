@@ -30,20 +30,10 @@ class PengaduanController extends Controller
             'instansi' => 'required|string|max:255',
             'isi_aduan' => 'required|string',
             'bukti_aduan' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $gResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => env('RECAPTCHA_SECRET_KEY'),
-                    'response' => $value,
-                    'remoteip' => request()->ip(),
-                ]);
-
-                // Jika Google bilang "False" (gagal), maka tampilkan error
-                if (!$gResponse->json('success')) {
-                    $fail('Verifikasi robot gagal, silakan coba lagi.');
-                }
-            }]
+            'captcha' => 'required|captcha',
         ], [
-            'g-recaptcha-response.required' => 'Silakan centang kotak "Saya bukan robot".',
+            'captcha.required' => 'Wajib mengisi jawaban.',
+            'captcha.captcha' => 'Jawaban salah, silakan coba lagi.',
         ]);
 
         $pathBukti = null;
