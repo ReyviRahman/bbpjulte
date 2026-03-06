@@ -108,7 +108,7 @@ return [
         'length' => 9,
         'width' => 200,
         'height' => 60,
-        'quality' => 90,
+        'quality' => 100,
         'math'   => true,
     ],
 ];

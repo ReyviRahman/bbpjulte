@@ -236,6 +236,58 @@
             font-size: 15px;
             color: #9ca3af;
         }
+
+        .icon-button {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #d1d5db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dropdown-panel {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            width: 400px;
+            max-width: 90vw;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            padding: 1rem;
+        }
+
+        
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-item input[type="checkbox"] {
+            width: 1em;
+            height: 1em;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+
+        .toggle-item label {
+            font-size: 0.875rem;
+            user-select: none;
+            cursor: pointer;
+            color: #374151 !important;
+        }
     </style>
 @endpush
 
@@ -477,15 +529,45 @@
 
     {{-- BAGIAN GRAFIK --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
         <div class="card lg:col-span-2">
             <div class="h-96 relative" data-ikhtisar-wrap>
-    
                 {{-- 1. Toggle Icon --}}
-                <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
-                    class="absolute top-[4px] right-0 z-50 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
-                </button>
+                <div class="absolute top-[2px] right-11 z-50 flex items-center gap-1">
+                    <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
+                        class=" cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
+                    </button>
+                    <div class="settings-dropdown-wrapper">
+                        <button id="settingsIconBtn" class="icon-button" aria-label="Pengaturan Tampilan">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                            </svg>
+                        </button>
+                        <div id="controlsPanel" class="dropdown-panel">
+                            <h4 class="text-md font-medium mb-2 text-gray-800 dark:text-gray-200">
+                                Pilih Tahun:</h4>
+                            <div class="overflow-auto h-64">
+                                @php
+                                    $totalYears = count($ikmYears);
+                                @endphp
+
+                                @foreach($ikmYears as $index => $year)
+                                    @php
+                                        // Hanya beri nilai 'checked' jika index-nya adalah 2 terakhir
+                                        $isChecked = ($index >= $totalYears - 4) ? 'checked' : '';
+                                    @endphp
+                                    <div class="toggle-item mb-1">
+                                        <input type="checkbox" class="column-toggle year-toggle" value="{{ $index }}" {{ $isChecked }}>
+                                        <label>{{ $year }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
 
                 {{-- 2. Chart Container --}}
                 <div class="w-full h-full pr-4"> 
@@ -493,68 +575,70 @@
                 </div>
 
                 {{-- 3. IKHTISAR (FLOATING OVERLAY) --}}
-                <div class="absolute top-6 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
-    <div class="rounded-xl p-4 card"> 
-        
-        <div class="font-semibold text-slate-800">
-            Tren IKM
-        </div>
-        
-        <div class="mt-4 space-y-4">
-            @php
-                $colors = $warnaTrenIKM;
-                $twKeys = ['TW1', 'TW2', 'TW3', 'TW4'];
-                $hasAnyData = false;
-                // Definisi Romawi
-                $romawi = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV'];
-            @endphp
-
-            @foreach($ikmYears as $idxYear => $year)
-                <div>
-                    <div class="text-xs font-bold text-slate-600 mb-2 uppercase">
-                        TAHUN {{ $year }}
-                    </div>
-
-                    <div class="space-y-2">
-                        @foreach($twKeys as $idxTw => $twKey)
+                <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
+                    <div class="rounded-xl p-4 card"> 
+                        
+                        <div class="font-semibold text-slate-800">
+                            Tren IKM
+                        </div>
+                        
+                        <div class="mt-4 space-y-4">
                             @php
-                                $val  = $ikmSeries[$twKey][$idxYear] ?? null;
-                                $meta = $metaSeries[$twKey][$idxYear] ?? '-';
-                                $c    = $colors[$idxTw];
-                                
-                                if ($val !== null) $hasAnyData = true;
-
-                                // UBAH LABEL DISINI: (idxTw mulai dari 0, jadi +1)
-                                $labelTriwulan = "Triwulan " . ($romawi[$idxTw + 1] ?? '');
+                                $colors = $warnaTrenIKM;
+                                $twKeys = ['TW1', 'TW2', 'TW3', 'TW4'];
+                                $hasAnyData = false;
+                                // Definisi Romawi
+                                $romawi = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV'];
                             @endphp
 
-                            @if($val !== null)
-                                <div class="flex items-start gap-2">
-                                    {{-- Dot Warna --}}
-                                    <span class="w-3 h-3 rounded-full shrink-0 mt-1" style="background-color: {{ $c }}"></span>
-                                    
-                                    <div class="text-sm text-slate-700 flex-1 min-w-0 break-words">
-                                        {{-- Tampilkan Label Romawi --}}
-                                        <span class="font-semibold">{{ $labelTriwulan }}</span>: {{ number_format($val, 2) }}
-                                        
-                                        <div class="mt-0.5">
-                                            Kategori Terbanyak: {{ $meta }}
-                                        </div>
+                            @foreach($ikmYears as $idxYear => $year)
+                                {{-- TAMBAHKAN class dan data-year-index DI SINI --}}
+                                <div class="ikhtisar-year-block" data-year-index="{{ $idxYear }}">
+                                    <div class="text-xs font-bold text-slate-600 mb-2 uppercase">
+                                        TAHUN {{ $year }}
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        @foreach($twKeys as $idxTw => $twKey)
+                                            {{-- ... (Kode PHP/Blade Anda di sini biarkan sama persis seperti sebelumnya) ... --}}
+                                            @php
+                                                $val  = $ikmSeries[$twKey][$idxYear] ?? null;
+                                                $meta = $metaSeries[$twKey][$idxYear] ?? '-';
+                                                $c    = $colors[$idxTw];
+                                                
+                                                if ($val !== null) $hasAnyData = true;
+
+                                                $labelTriwulan = "Triwulan " . ($romawi[$idxTw + 1] ?? '');
+                                            @endphp
+
+                                            @if($val !== null)
+                                                <div class="flex items-start gap-2">
+                                                    <span class="w-3 h-3 rounded-full shrink-0 mt-1" style="background-color: {{ $c }}"></span>
+                                                    <div class="text-sm text-slate-700 flex-1 min-w-0 break-words">
+                                                        <span class="font-semibold">{{ $labelTriwulan }}</span>: {{ number_format($val, 2) }}
+                                                        <div class="mt-0.5">
+                                                            Kategori Terbanyak: {{ $meta }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
                                     </div>
                                 </div>
+                            @endforeach
+
+                            {{-- Tambahkan ID untuk pesan kosong agar bisa dikontrol oleh JS --}}
+                            <div id="emptyIkhtisarMsg" class="text-sm text-slate-500 mt-2" style="display: none;">
+                                TIDAK ADA DATA TAHUN YANG DIPILIH.
+                            </div>
+
+                            @if(!$hasAnyData)
+                                <div class="text-sm text-slate-500">TIDAK ADA DATA.</div>
                             @endif
-                        @endforeach
+                        </div>
+
                     </div>
                 </div>
-            @endforeach
-
-            @if(!$hasAnyData)
-                <div class="text-sm text-slate-500">TIDAK ADA DATA.</div>
-            @endif
-        </div>
-
-    </div>
-</div>
             </div>
         </div>
 
@@ -716,6 +800,68 @@
                     <div class="w-full h-full pr-4">  {{-- pr-12 = 48px, bisa kamu adjust --}}
                         <div id="nrrChart" class="w-full h-full"></div>
                     </div>
+                    {{-- Table --}}
+                    <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
+                        <div class="rounded-xl p-4 card">
+                            <div class="font-semibold text-slate-800 ">
+                                RERATA UNSUR PELAYANAN
+                            </div>
+
+                            <div class="mt-1 text-sm text-slate-600 ">
+                                Skala 1–4
+                            </div>
+
+                            <div class="mt-4 space-y-2">
+                                @php 
+                                    $hasData = false; 
+
+                                    // 1. Duplikasi array agar data asli tidak berubah
+                                    $sortedUnsur = $namaUnsur;
+
+                                    // 2. Logika Sorting: Besar ke Kecil (Descending)
+                                    uksort($sortedUnsur, function($keyA, $keyB) use ($nrr) {
+                                        $valA = (float) ($nrr[$keyA] ?? 0);
+                                        $valB = (float) ($nrr[$keyB] ?? 0);
+                                        
+                                        // Perubahan di sini: B dibandingkan dengan A
+                                        return $valB <=> $valA; 
+                                    });
+                                @endphp
+
+                                {{-- Gunakan $sortedUnsur yang sudah diurutkan --}}
+                                @foreach($sortedUnsur as $k => $nama) 
+                                    @php
+                                        $val = (float) ($nrr[$k] ?? 0);
+
+                                        // 0 tidak tampil
+                                        if ($val <= 0) continue;
+
+                                        $hasData = true;
+                                        
+                                        // Catatan: $loop->index akan mengikuti urutan loop yang baru
+                                        $c = $warnaRerataUnsurPelayanan[0];
+                                        $label = mb_strtoupper($k ?? '', 'UTF-8'); 
+                                        $pct = ($val / 4) * 100;
+                                    @endphp
+
+                                    <div class="flex items-start gap-2">
+                                        <span class="w-3 h-3 rounded-full shrink-0 mt-1" style="background-color: {{ $c }}"></span>
+
+                                        <div class="text-sm text-slate-700 flex-1 min-w-0 break-words">
+                                            <span class="font-semibold">{{ $label }} {{ $nama }}</span>:
+                                            {{ number_format($val, 2) }}
+                                            <span>({{ number_format($pct, 2) }}%)</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                @if(!$hasData)
+                                    <div class="text-sm text-slate-500">TIDAK ADA DATA.</div>
+                                @endif
+                            </div>
+
+
+                        </div>
 
                 </div>
 
@@ -1206,6 +1352,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
+        
         const mapNamaUnsur = @json($namaUnsur);
 
         function toggleDropdown() {
@@ -1238,6 +1385,34 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // 1. Ambil elemen tombol dan panel
+            const settingsBtn = document.getElementById("settingsIconBtn");
+            const controlsPanel = document.getElementById("controlsPanel");
+
+            // Pastikan panel tersembunyi pada awalnya (jika belum di-set via CSS inline)
+            controlsPanel.style.display = "none";
+
+            // 2. Tambahkan event listener untuk klik tombol
+            settingsBtn.addEventListener("click", function(event) {
+                // Mencegah klik tombol langsung memicu event di 'document'
+                event.stopPropagation(); 
+                
+                // Toggle display antara 'block' dan 'none'
+                if (controlsPanel.style.display === "none" || controlsPanel.style.display === "") {
+                    controlsPanel.style.display = "block"; // Munculkan panel
+                } else {
+                    controlsPanel.style.display = "none";  // Sembunyikan panel
+                }
+            });
+
+            // 3. (Opsional & Direkomendasikan) Sembunyikan panel jika user klik di luar dropdown
+            document.addEventListener("click", function(event) {
+                // Cek apakah yang diklik BUKAN tombol dan BUKAN isi dari panel
+                if (!settingsBtn.contains(event.target) && !controlsPanel.contains(event.target)) {
+                    controlsPanel.style.display = "none";
+                }
+            });
+            
             // A. Tutup dropdown jika klik di luar area dropdown
             window.onclick = function (event) {
                 if (!event.target.matches('.dropdown-btn') && !event.target.matches('.dropdown-btn *')) {
@@ -1284,16 +1459,19 @@
             const gridColors = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#e0e0e0';
 
             // Ambil data layanan terbanyak dari PHP
+            // 1. Persiapan Data
             const metaData = @json($metaSeries); 
+            const allYears = @json($ikmYears);
+            const rawSeries = [
+                { name: "Triwulan I",  data: @json($ikmSeries['TW1']) },
+                { name: "Triwulan II", data: @json($ikmSeries['TW2']) },
+                { name: "Triwulan III", data: @json($ikmSeries['TW3']) },
+                { name: "Triwulan IV",  data: @json($ikmSeries['TW4']) }
+            ];
 
-            const mapTriwulan = {
-                'TW1': 'Triwulan I',
-                'TW2': 'Triwulan II',
-                'TW3': 'Triwulan III',
-                'TW4': 'Triwulan IV'
-            };
+            window.activeYearIndices = allYears.map((_, i) => i);
 
-            // Definisikan Warna Custom sesuai request
+            // 2. Konfigurasi Grafik (Options)
             const ikmOptions = {
                 title: {
                     text: 'Tren IKM',
@@ -1304,16 +1482,11 @@
                         fontSize: '17px'
                     }
                 },
-                series: [
-                    { name: "Triwulan I",   data: @json($ikmSeries['TW1']) },
-                    { name: "Triwulan II",  data: @json($ikmSeries['TW2']) },
-                    { name: "Triwulan III", data: @json($ikmSeries['TW3']) },
-                    { name: "Triwulan IV",  data: @json($ikmSeries['TW4']) },
-                ],
+                series: rawSeries,
                 chart: {
                     type: "bar",
                     height: "100%",
-                    ...chartTheme, // Pastikan variable ini ada
+                    ...chartTheme, // Pastikan variabel chartTheme ini sudah ada di script Anda sebelumnya
                     toolbar: {
                         show: true,
                         export: {
@@ -1342,7 +1515,7 @@
                 },
 
                 xaxis: {
-                    categories: @json($ikmYears),
+                    categories: allYears,
                     title: { text: "TAHUN", style: { fontWeight: 400 } },
                     labels: { style: { colors: textColors } }
                 },
@@ -1361,46 +1534,39 @@
                 grid: { borderColor: gridColors },
 
                 tooltip: {
-                    // Kita set 'shared: false' agar tooltip fokus ke satu bar saja (gaya default bar chart)
                     shared: false,
                     intersect: true,
-                    
                     custom: function({ series, seriesIndex, dataPointIndex, w }) {
-                        // 1. Ambil Data
                         const val = series[seriesIndex][dataPointIndex];
-                        if (val === null) return;
+                        if (val === null || val === undefined) return;
 
-                        // Ambil atribut visual & data
                         const year = w.globals.labels[dataPointIndex];        
-                        const seriesName = w.globals.seriesNames[seriesIndex]; // Ini sekarang sudah jadi "Triwulan I", dst
+                        const seriesName = w.globals.seriesNames[seriesIndex]; 
                         const color = w.globals.colors[seriesIndex];          
 
-                        // Kita perlu mapping balik untuk mengambil metaData karena key di metaData masih 'TW1', 'TW2', dst.
-                        // Urutan seriesIndex: 0=TW1, 1=TW2, 2=TW3, 3=TW4
                         const originalKeys = ['TW1', 'TW2', 'TW3', 'TW4'];
-                        const keyTw = originalKeys[seriesIndex]; // Ambil key asli untuk lookup metaData
+                        const keyTw = originalKeys[seriesIndex]; 
 
-                        const kategori = metaData[keyTw][dataPointIndex] || '-'; 
+                        const originalDataIndex = window.activeYearIndices[dataPointIndex];
+                        
+                        const kategori = typeof metaData !== 'undefined' && metaData[keyTw] 
+                                        ? (metaData[keyTw][originalDataIndex] || '-') 
+                                        : '-'; 
 
                         return `
-                            <div class="apexcharts-tooltip-box" style="background: #fff; border: 1px solid #e3e3e3; box-shadow: 2px 2px 6px -4px #999; border-radius: 5px; font-family: Helvetica, Arial, sans-serif;">
-                                
-                                <div class="apexcharts-tooltip-title" style="background: #eceff1; border-bottom: 1px solid #ddd; font-size: 12px; margin: 0;">
+                            <div class="apexcharts-tooltip-box" style="background: #fff; border: 1px solid #e3e3e3; box-shadow: 2px 2px 6px -4px #999; border-radius: 5px; font-family: Helvetica, Arial, sans-serif; padding: 8px;">
+                                <div class="apexcharts-tooltip-title" style="background: #eceff1; border-bottom: 1px solid #ddd; font-size: 12px; margin: -8px -8px 8px -8px; padding: 8px;">
                                     ${year}
                                 </div>
-
-                                <div style="">
-                                    <div style="display: flex; align-items: flex-start;">
-                                        <span style="background-color: ${color}; min-width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-top: 4px; margin-right: 10px;"></span>
-                                        <div>
-                                            <div style="font-size: 12px; color: #373d3f;">
-                                                <span style="font-weight: 600;">${seriesName}: </span> 
-                                                <span>${Number(val).toFixed(2)}</span>
-                                            </div>
-
-                                            <div style="font-size: 11px;  margin-top: 4px; max-width: 200px; white-space: normal; line-height: 1.4;">
-                                                <span style="font-weight: 600;">Kategori Terbanyak:</span> ${kategori}
-                                            </div>
+                                <div style="display: flex; align-items: flex-start;">
+                                    <span style="background-color: ${color}; min-width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-top: 4px; margin-right: 10px;"></span>
+                                    <div>
+                                        <div style="font-size: 12px; color: #373d3f;">
+                                            <span style="font-weight: 600;">${seriesName}: </span> 
+                                            <span>${Number(val).toFixed(2)}</span>
+                                        </div>
+                                        <div style="font-size: 11px; margin-top: 4px; max-width: 200px; white-space: normal; line-height: 1.4;">
+                                            <span style="font-weight: 600;">Kategori Terbanyak:</span> ${kategori}
                                         </div>
                                     </div>
                                 </div>
@@ -1416,7 +1582,66 @@
                 }
             };
 
-            new ApexCharts(document.querySelector("#ikmChart"), ikmOptions).render();
+            // 3. Render Grafik ke dalam Variabel 'ikmChart' (PENTING!)
+            const ikmChart = new ApexCharts(document.querySelector("#ikmChart"), ikmOptions);
+            ikmChart.render();
+
+            const yearCheckboxes = document.querySelectorAll('.year-toggle');
+            // Ambil semua blok tahun di panel Ikhtisar dan pesan kosongnya
+            const ikhtisarBlocks = document.querySelectorAll('.ikhtisar-year-block');
+            const emptyIkhtisarMsg = document.getElementById('emptyIkhtisarMsg');
+            
+            yearCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    let checkedIndices = [];
+                    
+                    // 1. Kumpulkan index yang aktif dicentang
+                    yearCheckboxes.forEach(cb => {
+                        if(cb.checked) {
+                            checkedIndices.push(parseInt(cb.value));
+                        }
+                    });
+
+                    // 2. Update Grafik ApexCharts
+                    window.activeYearIndices = checkedIndices;
+                    const filteredYears = checkedIndices.map(idx => allYears[idx]);
+                    const filteredSeries = rawSeries.map(seriesItem => {
+                        return {
+                            name: seriesItem.name,
+                            data: checkedIndices.map(idx => seriesItem.data[idx])
+                        };
+                    });
+
+                    ikmChart.updateOptions({ xaxis: { categories: filteredYears } });
+                    ikmChart.updateSeries(filteredSeries);
+
+                    // 3. Update Panel Ikhtisar
+                    let visibleCount = 0;
+                    ikhtisarBlocks.forEach(block => {
+                        // Ambil index dari atribut data HTML
+                        const blockIndex = parseInt(block.getAttribute('data-year-index'));
+                        
+                        // Jika index blok ini ada di daftar checkbox yang dicentang, tampilkan
+                        if (checkedIndices.includes(blockIndex)) {
+                            block.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            block.style.display = 'none'; // Sembunyikan jika tidak dicentang
+                        }
+                    });
+
+                    // Tampilkan pesan kosong jika semua checkbox dihilangkan centangnya
+                    if (visibleCount === 0) {
+                        emptyIkhtisarMsg.style.display = 'block';
+                    } else {
+                        emptyIkhtisarMsg.style.display = 'none';
+                    }
+                });
+            });
+
+            if (yearCheckboxes.length > 0) {
+                yearCheckboxes[0].dispatchEvent(new Event('change'));
+            }
 
             // 2. Grafik Distribusi Status (Donut Chart)
             const statusOptions = {
@@ -1560,7 +1785,7 @@
                         maxHeight: 140,     //  PENTING: Beri batas tinggi maksimal lebih lega (default biasanya kecil)
                         formatter: function (val) {
                             const nama = namaUnsurMap?.[val] || '';
-                            return `${val} ${nama}`;
+                            return `${nama}`;
                         }
                     }
                 },
