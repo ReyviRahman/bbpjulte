@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/app-layout.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    @vite(['resources/js/app.js'])
 
     @push('styles')
         {{-- CSS UNTUK DROPDOWN MENU --}}

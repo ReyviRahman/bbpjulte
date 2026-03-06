@@ -10,6 +10,13 @@
         display: none;
     }
 
+    .card {
+        background-color: #fff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+
     .no-scrollbar {
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -151,7 +158,7 @@
                 @endforeach
             </div>
             <div class="grid sm:grid-cols-2 grid-cols-1 mt-4">
-                <div>
+                <div class="card p-2">
                     <div class="h-96 relative" data-ikhtisar-wrap>
 
                         {{-- 1. Toggle Icon --}}
@@ -174,7 +181,7 @@
                             data-ikhtisar-panel>
                             <div class="rounded-xl p-4 card">
 
-                                <div class="font-semibold text-slate-800">
+                                <div class="text-left font-semibold text-slate-800">
                                     Tren IKM
                                 </div>
 
@@ -188,7 +195,7 @@
                                     @endphp
 
                                     @foreach($ikmYears as $idxYear => $year)
-                                    <div>
+                                    <div class="text-left">
                                         <div class="text-xs font-bold text-slate-600 mb-2 uppercase">
                                             TAHUN {{ $year }}
                                         </div>
@@ -237,7 +244,7 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div class="">
                     <div class="swiper mySwiper w-full pb-16 px-4">
                         <div class="swiper-wrapper">
                             @foreach ($laporan as $item)
@@ -247,7 +254,7 @@
                                 <!-- Lebar kartu mengikuti lebar container (w-full) -->
                                 <!-- Ubah rounded-2xl menjadi rounded-none (Runcing) -->
                                 <div
-                                    class="w-full bg-white shadow-lg rounded-none overflow-hidden border border-gray-100 flex flex-col">
+                                    class="w-full card shadow-lg overflow-hidden flex flex-col">
 
                                     <!-- Header Kartu -->
                                     <div
@@ -356,6 +363,118 @@
 
                     </div>
                 </div>
+                <div class="card p-2">
+                    <div class="h-96 relative" data-ikhtisar-wrap>
+                        <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
+                            class="absolute top-3 right-0 z-50 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
+                                <path fill="currentColor" fill-rule="evenodd"
+                                    d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        {{-- Chart --}}
+                        <div class="w-full h-full pr-2"> {{-- pr-12 = 48px, bisa kamu adjust --}}
+                            <div id="layananPerKategoriChart" class="w-full h-full"></div>
+                        </div>
+
+                        {{-- Ikhtisar / Table (dinamis ikut drilldown) --}}
+                        <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden"
+                            data-ikhtisar-panel>
+                            <div class="rounded-xl p-4 card text-left">
+                                <div id="layananIkhtisarTitle" class="font-semibold text-slate-800 ">
+                                    LAYANAN BERDASARKAN KATEGORI
+                                </div>
+
+                                <div id="layananIkhtisarTotal" class="mt-1 text-sm text-slate-600 ">
+                                    Total Data=0
+                                </div>
+
+                                <div id="layananIkhtisarList" class="mt-4 space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card p-2">
+                    <div class="h-96 relative " data-ikhtisar-wrap>
+                        <button type="button" data-ikhtisar-toggle aria-expanded="false" title="Ikhtisar"
+                            class="absolute top-[6px] right-0 z-50 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24 1.5c-7.403 0-12.592.239-15.857.466S2.281 4.66 1.991 7.96C1.742 10.794 1.5 15.074 1.5 21v22.652c0 2.99 3.507 4.603 5.778 2.657l6.96-5.966c2.687.093 5.927.157 9.762.157c7.403 0 12.592-.239 15.857-.466s5.862-2.693 6.152-5.993c.249-2.835.491-7.115.491-13.041s-.242-10.206-.491-13.041c-.29-3.3-2.887-5.765-6.152-5.993C36.592 1.74 31.403 1.5 24 1.5m2.882 25.452c2.218-1.238 3.36-2.588 3.538-4.88a96 96 0 0 1-2.028-.027c-1.33-.034-2.326-1.032-2.361-2.362a99 99 0 0 1-.031-2.61c0-1.16.015-2.069.035-2.77c.036-1.252.939-2.202 2.191-2.254C28.921 12.021 29.828 12 31 12s2.079.02 2.774.05c1.252.05 2.155 1.001 2.191 2.254c.02.695.035 1.594.035 2.74v5.03h-.023c-.296 4.235-3.425 6.759-6.97 7.85c-.499.153-1.05.08-1.427-.281c-.438-.419-.813-.937-1.088-1.368c-.295-.464-.09-1.055.39-1.323m-10.462-4.88c-.178 2.292-1.32 3.642-3.538 4.88c-.48.268-.685.86-.39 1.323c.275.431.65.949 1.088 1.368c.378.36.928.434 1.427.28c3.545-1.09 6.674-3.614 6.97-7.85H22v-5.029c0-1.146-.015-2.045-.035-2.74c-.036-1.253-.939-2.204-2.191-2.255C19.079 12.021 18.172 12 17 12s-2.079.02-2.774.05c-1.252.05-2.155 1.001-2.191 2.254c-.02.7-.035 1.608-.035 2.768c0 1.075.013 1.933.03 2.61c.036 1.33 1.031 2.329 2.362 2.363c.546.013 1.215.024 2.028.027" clip-rule="evenodd"/></svg>
+                        </button>
+                        {{-- Chart --}}
+                        <div class="w-full h-full pr-4">  {{-- pr-12 = 48px, bisa kamu adjust --}}
+                            <div id="nrrChart" class="w-full h-full"></div>
+                        </div>
+                        {{-- Table --}}
+                        <div class="absolute top-8 right-0 z-50 w-[380px] max-w-[92%] max-h-[85%] overflow-auto hidden" data-ikhtisar-panel>
+                            <div class="rounded-xl p-4 card text-left">
+                                <div class="font-semibold text-slate-800 ">
+                                    RERATA UNSUR PELAYANAN
+                                </div>
+
+                                <div class="mt-1 text-sm text-slate-600 ">
+                                    Skala 1–4
+                                </div>
+
+                                <div class="mt-4 space-y-2">
+                                    @php 
+                                        $hasData = false; 
+
+                                        // 1. Duplikasi array agar data asli tidak berubah
+                                        $sortedUnsur = $namaUnsur;
+
+                                        // 2. Logika Sorting: Besar ke Kecil (Descending)
+                                        uksort($sortedUnsur, function($keyA, $keyB) use ($nrr) {
+                                            $valA = (float) ($nrr[$keyA] ?? 0);
+                                            $valB = (float) ($nrr[$keyB] ?? 0);
+                                            
+                                            // Perubahan di sini: B dibandingkan dengan A
+                                            return $valB <=> $valA; 
+                                        });
+                                    @endphp
+
+                                    {{-- Gunakan $sortedUnsur yang sudah diurutkan --}}
+                                    @foreach($sortedUnsur as $k => $nama) 
+                                        @php
+                                            $val = (float) ($nrr[$k] ?? 0);
+
+                                            // 0 tidak tampil
+                                            if ($val <= 0) continue;
+
+                                            $hasData = true;
+                                            
+                                            // Catatan: $loop->index akan mengikuti urutan loop yang baru
+                                            $c = $warnaRerataUnsurPelayanan[0];
+                                            $label = mb_strtoupper($k ?? '', 'UTF-8'); 
+                                            $pct = ($val / 4) * 100;
+                                        @endphp
+
+                                        <div class="flex items-start gap-2">
+                                            <span class="w-3 h-3 rounded-full shrink-0 mt-1" style="background-color: {{ $c }}"></span>
+
+                                            <div class="text-sm text-slate-700 flex-1 min-w-0 break-words">
+                                                <span class="font-semibold">{{ $label }} {{ $nama }}</span>:
+                                                {{ number_format($val, 2) }}
+                                                <span>({{ number_format($pct, 2) }}%)</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    @if(!$hasData)
+                                        <div class="text-sm text-slate-500">TIDAK ADA DATA.</div>
+                                    @endif
+                                </div>
+
+
+                            </div>
+
+                    </div>
+
+                </div>
+            </div>
+
             </div>
             <div class="mt-8 text-sm font-medium  bg-gray-50 inline-block px-4 py-2 rounded border border-gray-200">
                 <span class="">Informasi:</span> Data yang tersedia saat ini adalah data triwulan terakhir, pembaruan
@@ -485,22 +604,6 @@
             </a>
         </div>
 
-        <div class="max-w-6xl mx-auto min-h-screen flex sm:flex-row flex-col justify-center items-start mt-5">
-            <!-- Penjelasan SKM -->
-            <div class="mb-8 px-2 sm:basis-128">
-                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-center md:text-left">
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">Survei Kepuasan Masyarakat</h2>
-                    <p class="text-gray-600 leading-relaxed">
-                        Balai Bahasa Provinsi Jambi membutuhkan informasi rutin tentang Survei Kepuasan Masyarakat.
-                        Untuk itu, kami berupaya menyajikan Survei Kepuasan Masyarakat yang diharapkan mampu
-                        memberikan gambaran mengenai kualitas pelayanan kami kepada masyarakat.
-                    </p>
-                </div>
-            </div>
-
-            <!-- CAROUSEL CONTAINER -->
-
-        </div>
     </div>
 </div>
 
@@ -657,12 +760,12 @@
                         return `
                             <div class="apexcharts-tooltip-box" style="background: #fff; border: 1px solid #e3e3e3; box-shadow: 2px 2px 6px -4px #999; border-radius: 5px; font-family: Helvetica, Arial, sans-serif;">
                                 
-                                <div class="apexcharts-tooltip-title" style="background: #eceff1; border-bottom: 1px solid #ddd; font-size: 12px; margin: 0;">
+                                <div class="apexcharts-tooltip-title" style="background: #eceff1; border-bottom: 1px solid #ddd; font-size: 12px; margin: 0; text-align: left;">
                                     ${year}
                                 </div>
 
                                 <div style="">
-                                    <div style="display: flex; align-items: flex-start;">
+                                    <div style="display: flex; align-items: flex-start; text-align: left;">
                                         <span style="background-color: ${color}; min-width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-top: 4px; margin-right: 10px;"></span>
                                         <div>
                                             <div style="font-size: 12px; color: #373d3f;">
@@ -689,6 +792,332 @@
             };
 
             new ApexCharts(document.querySelector("#ikmChart"), ikmOptions).render();
+
+            // ============================================================
+    // 1. TERIMA VARIABEL DARI CONTROLLER
+    // ============================================================
+    // Pastikan variabel ini dikirim dari Controller (index method)
+    const mapServiceColors    = @json($serviceColors ?? []);
+    // Variable ini harus berisi 'colorMap' yang dibuat di controller
+    const mapSubServiceColors = @json($subServiceColors ?? []); 
+    
+    // Data Dinamis dari Database
+    const mainSeriesRaw       = @json($mainSeries ?? []);
+    const drillSeriesRaw      = @json($drilldownSeries ?? []);
+
+    // ============================================================
+    // 2. LOGIKA PEWARNAAN OTOMATIS (Sesuai kode Anda)
+    // ============================================================
+
+    function normalizePointLayanan(p) {
+        let name = '';
+        let val = 0;
+        let drillId = undefined;
+
+        // Cek format data (Array vs Object)
+        if (Array.isArray(p)) {
+            name = p[0];
+            val = Number(p[1]) || 0;
+        } else {
+            name = p.name || '';
+            val = Number(p.y) || 0;
+            drillId = p.drilldown;
+        }
+
+        // Tentukan Warna
+        let assignedColor = '#cbd5e1'; // Default
+
+        // A. Cek di Map Induk
+        if (mapServiceColors[name]) {
+            assignedColor = mapServiceColors[name];
+        }
+        // B. Cek di Map Anak (Sub-layanan)
+        else if (mapSubServiceColors[name]) {
+            assignedColor = mapSubServiceColors[name];
+        }
+        // C. Fallback: Jika controller sudah kirim warna di properti object (Main Series)
+        else if (!Array.isArray(p) && p.color) {
+            assignedColor = p.color;
+        }
+
+        return {
+            name: name,
+            y: val,
+            color: assignedColor,
+            drilldown: drillId
+        };
+    }
+
+    function applyColorsLayanan(points) {
+        if (!Array.isArray(points)) return [];
+        return points.map(p => normalizePointLayanan(p));
+    }
+
+    // ============================================================
+    // 3. PROSES DATA (BERSIHKAN 0 & BERI WARNA)
+    // ============================================================
+
+    function filterZero(dataArr) {
+        return dataArr.filter(p => p.y > 0);
+    }
+
+    // A. Proses Main Series
+    // Clone agar aman
+    const processedMainSeries = JSON.parse(JSON.stringify(mainSeriesRaw));
+    
+    // Pastikan array ada isinya sebelum diproses
+    if (processedMainSeries.length > 0) {
+        processedMainSeries[0].data = filterZero(applyColorsLayanan(processedMainSeries[0].data));
+    }
+
+    // B. Proses Drilldown Series
+    const processedDrillSeries = (drillSeriesRaw || []).map(s => ({
+        ...s,
+        data: filterZero(applyColorsLayanan(s.data || []))
+    })).filter(s => s.data.length > 0);
+
+    // ============================================================
+    // 4. IKHTISAR & HIGHCHARTS (STYLE TETAP - TAILWIND)
+    // ============================================================
+
+    function sumY(points) {
+        return points.reduce((acc, p) => acc + (Number(p.y) || 0), 0);
+    }
+
+    function renderIkhtisarLayanan(title, points) {
+        const titleEl = document.getElementById('layananIkhtisarTitle');
+        const totalEl = document.getElementById('layananIkhtisarTotal');
+        const listEl = document.getElementById('layananIkhtisarList');
+
+        if (!titleEl || !totalEl || !listEl) return;
+
+        const total = sumY(points);
+        titleEl.textContent = title;
+        totalEl.textContent = `Total Data=${total}`;
+
+        if (!points.length) {
+            listEl.innerHTML = `<div class="text-sm text-slate-500">TIDAK ADA DATA.</div>`;
+            return;
+        }
+
+        // Sort data descending agar yang banyak di atas
+        const sortedPoints = [...points].sort((a, b) => b.y - a.y);
+
+        // STYLE INI TIDAK SAYA UBAH (Sesuai Request)
+        listEl.innerHTML = sortedPoints.map(p => {
+            const c = p.color;
+            const pct = total ? (p.y / total * 100) : 0;
+            const name = (p.name || '').toString().toLocaleUpperCase('id-ID');
+
+            return `
+            <div class="flex items-start gap-2">
+                <span class="w-3 h-3 rounded-full shrink-0 mt-1" style="background-color:${c}"></span>
+                <div class="text-sm text-slate-700 flex-1 min-w-0 break-words">
+                    <span class="font-semibold">${name}</span>:
+                    ${p.y} (${pct.toFixed(2)}%)
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // Initial Render
+    if (processedMainSeries.length > 0) {
+        renderIkhtisarLayanan('LAYANAN BERDASARKAN KATEGORI', processedMainSeries[0].data);
+    }
+
+    Highcharts.chart('layananPerKategoriChart', {
+        chart: {
+            type: 'bar',
+            events: {
+                drilldown: function (e) {
+                    if (!e.seriesOptions) return;
+                    
+                    // Kita ambil data drilldown yang SUDAH kita proses warnanya di atas
+                    // Cari series di processedDrillSeries yang id-nya sama
+                    const targetSeries = processedDrillSeries.find(s => s.id === e.seriesOptions.id);
+
+                    if (targetSeries) {
+                        // Gunakan nama point induk sebagai judul detail
+                        const parentName = (e.point.name || '').toUpperCase();
+                        renderIkhtisarLayanan(`DETAIL: ${parentName}`, targetSeries.data);
+                    }
+                },
+                drillup: function () {
+                    // Kembali ke Main
+                    renderIkhtisarLayanan('LAYANAN BERDASARKAN KATEGORI', processedMainSeries[0].data);
+                }
+            }
+        },
+
+        title: {
+            text: 'Layanan Berdasarkan Kategori',
+            align: 'left',
+            style: {
+                fontFamily: 'Inter, sans-serif',
+                color: '#000',
+                fontWeight: 600,
+                fontSize: '18px'
+            }
+        },
+        
+        exporting: {
+            enabled: true,
+            filename: "Layanan Berdasarkan Kategori",
+            buttons: {
+                contextButton: {
+                    menuItems: ['downloadPNG', 'downloadSVG', 'downloadCSV']
+                }
+            }
+        },
+        xAxis: {
+            type: 'category',
+            labels: {
+                formatter: function () {
+                    return (this.value ?? '').toString().toLocaleUpperCase('id-ID');
+                }
+            }
+        },
+        yAxis: { title: { text: 'Jumlah' }, allowDecimals: false },
+        legend: { enabled: false },
+        tooltip: {
+            formatter: function () {
+                return `<b>${(this.point.name ?? '').toString().toLocaleUpperCase('id-ID')}</b>: ${this.y}`;
+            }
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                colorByPoint: true,
+                dataLabels: { enabled: true, format: '{point.y}' },
+                pointPadding: 0.03,
+                groupPadding: 0.03
+            }
+        },
+
+        // Gunakan Data yang Sudah Diproses
+        series: processedMainSeries,
+
+        drilldown: {
+            breadcrumbs: { position: { align: 'right' } },
+            series: processedDrillSeries
+        }
+    });
+     const nrr = @json($nrr);             // {U1: 3.1, U2: 3.2, ...}
+            const namaUnsurMap = @json($namaUnsur);  // {U1: "Kesesuaian...", ...}
+
+            // 1. Ambil keys mentah dulu (U1..U9)
+            let rawKeys = @json(array_keys($namaUnsur));
+
+            // 2. SORTING LOGIC: Urutkan Keys berdasarkan nilai NRR (Desc / Besar ke Kecil)
+            rawKeys.sort((a, b) => {
+                const valA = Number(nrr?.[a] ?? 0);
+                const valB = Number(nrr?.[b] ?? 0);
+                return valB - valA; // B - A = Descending (Besar ke Kecil)
+            });
+
+            // 3. Tetapkan hasil sort ke variable nrrKeys
+            const nrrKeys = rawKeys; 
+
+            // 4. Buat data series mengikuti urutan keys yang sudah disortir
+            const nrrData = nrrKeys.map(k => {
+                const v = Number(nrr?.[k] ?? 0);
+                return Math.round(v * 100) / 100; 
+            });
+
+            const nrrOptions = {
+                title: {
+                    text: 'Rerata Unsur Pelayanan',
+                    style: {
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#000',
+                        fontWeight: 600,
+                        fontSize: '17px'
+                    }
+                },
+                series: [{ name: '', data: nrrData }],
+                chart: {
+                    type: 'bar',
+                    height: '100%',
+                    ...chartTheme,
+                    toolbar: {
+                        show: true,
+                        export: {
+                            png: { filename: 'Rerata Unsur Pelayanan' },
+                            svg: { filename: 'Rerata Unsur Pelayanan' },
+                            csv: { filename: 'Rerata Unsur Pelayanan' }
+                        }
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        horizontal: false,     //  vertical bar
+                        distributed: true,
+                        columnWidth: '55%',
+                        dataLabels: {
+                            position: 'top' 
+                        }
+                    }
+                },
+                colors: @json($warnaRerataUnsurPelayanan),
+                dataLabels: {
+                    enabled: true,
+                    formatter: (val) => Number(val).toFixed(2),
+                    offsetY: -20,
+                    style: {
+                        fontSize: '12px',
+                        colors: ['#000000']
+                    }
+                },
+                xaxis: {
+                    categories: nrrKeys,
+                    labels: {
+                        style: {
+                            colors: textColors,
+                            fontSize: '11px'
+                        },
+                        rotate: -45,        // Miringkan 45 derajat
+                        rotateAlways: true, // Paksa miring (jangan auto-rotate)
+                        trim: false,        //  PENTING: Matikan pemotongan teks
+                        maxHeight: 140,     //  PENTING: Beri batas tinggi maksimal lebih lega (default biasanya kecil)
+                        formatter: function (val) {
+                            const nama = namaUnsurMap?.[val] || '';
+                            return `${nama}`;
+                        }
+                    }
+                },
+                // Tambahkan pengaturan Grid ini agar label paling bawah tidak "mepet" batas div
+                grid: {
+                    borderColor: gridColors,
+                    padding: {
+                        left: 75,   // Jarak aman kiri
+                    }
+                },
+                yaxis: {
+                    min: 0,
+                    max: 4,
+                    tickAmount: 4,
+                    labels: {
+                        style: { colors: textColors },
+                        formatter: (v) => Number(v).toFixed(0)
+                    }
+                },
+                tooltip: {
+                    theme: isDarkMode ? 'dark' : 'light',
+                    y: {
+                        formatter: function (val, opts) {
+                            const key = nrrKeys[opts.dataPointIndex] || '';
+                            const nama = namaUnsurMap?.[key] || key;
+                            return `${nama}: ${Number(val).toFixed(2)}`;
+                        }
+                    }
+                },
+                legend: { show: false }
+            };
+
+            new ApexCharts(document.querySelector("#nrrChart"), nrrOptions).render();
+
         });
 </script>
 @endpush

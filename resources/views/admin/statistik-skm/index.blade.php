@@ -19,6 +19,7 @@
             border-radius: 8px;
             font-size: 0.875rem;
         }
+        
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
