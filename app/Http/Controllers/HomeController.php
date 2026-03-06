@@ -460,6 +460,7 @@ class HomeController extends Controller
         return view('beranda', [
             'laporan'             => $laporan,
             'ikmScore'            => $ikmScore,
+            'jumlahNRRTertimbang' => $jumlahNRRTertimbang,
             'ikmKategori'         => $ikmKategori,
             'ikmMutu'             => $ikmMutu,
             'namaLayananPopuler'  => $namaLayananPopuler,

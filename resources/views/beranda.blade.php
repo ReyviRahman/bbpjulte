@@ -102,7 +102,7 @@
                 {{-- KOTAK 1: Indeks Kepuasan Masyarakat (Statis) --}}
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">
+                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
                         Indeks Kepuasan Masyarakat
                     </h4>
                     <div class="flex items-center justify-center gap-2">
@@ -115,7 +115,20 @@
                 {{-- KOTAK 2: Kategori Mutu Pelayanan (Statis) --}}
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">
+                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
+                        Rata-Rata IKM
+                    </h4>
+                    <div class="flex items-center justify-center gap-2">
+                        {{-- Menggunakan teks lebih kecil (text-2xl) karena isinya huruf, bukan angka --}}
+                        <span class="text-2xl ">
+                            {{ number_format($jumlahNRRTertimbang, 2, ',', '.') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
+                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
                         Kategori Mutu Pelayanan
                     </h4>
                     <div class="flex items-center justify-center gap-2">
@@ -125,26 +138,10 @@
                         </span>
                     </div>
                 </div>
-
-                {{-- KOTAK 3: Layanan Terbanyak (Statis) --}}
-                <div
-                    class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">
-                        Layanan Terbanyak
-                    </h4>
-                    <div class="flex flex-col items-center justify-center">
-                        <span class="text-2xl">
-                            {{ $namaLayananPopuler }}
-                        </span>
-
-                    </div>
-                </div>
-
-                {{-- KOTAK 4 & 5: Layanan Selesai dan Diproses (Dinamis dari Array) --}}
                 @foreach($statistik as $stat)
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">
+                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
                         {{ $stat['label'] }}
                     </h4>
                     <div class="flex items-center justify-center gap-2">
@@ -158,6 +155,18 @@
                     </div>
                 </div>
                 @endforeach
+                <div
+                    class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
+                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
+                        Layanan Terbanyak
+                    </h4>
+                    <div class="flex flex-col items-center justify-center">
+                        <span class="text-2xl">
+                            {{ $namaLayananPopuler }}
+                        </span>
+
+                    </div>
+                </div>
             </div>
             <div class="grid sm:grid-cols-2 grid-cols-1 mt-4">
                 <div class="card p-2">
@@ -374,7 +383,7 @@
                                 <!-- Lebar kartu mengikuti lebar container (w-full) -->
                                 <!-- Ubah rounded-2xl menjadi rounded-none (Runcing) -->
                                 <div
-                                    class="w-full  overflow-hidden flex flex-col">
+                                    class="w-full overflow-hidden flex flex-col">
 
                                     <!-- Header Kartu -->
                                     <div
