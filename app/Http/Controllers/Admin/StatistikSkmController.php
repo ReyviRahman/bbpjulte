@@ -216,6 +216,7 @@ class StatistikSkmController extends Controller
 
         //tabel skm
         $skmData = $query->get();
+        $skmDataPaginate = $query->paginate(15);
         $total = $skmData->count();
         $unsur = [
             'U1' => 'syarat_pengurusan_pelayanan',
@@ -922,6 +923,7 @@ class StatistikSkmController extends Controller
             'skmPublik' => $skmPublik,
             'skmPrivat' => $skmPrivat,
             'skmData' => $skmData,
+            'skmDataPaginate' => $skmDataPaginate,
             'nrr' => $nrr,
             'jumlahNRRTertimbang' => $jumlahNRRTertimbang,
             'ikm' => $ikm,

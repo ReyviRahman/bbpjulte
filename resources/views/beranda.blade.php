@@ -53,6 +53,18 @@
         transform: scale(1.2);
         /* Sedikit efek membesar saat aktif (opsional, agar manis) */
     }
+
+    .stat-text .title {
+        font-weight: 500;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .stat-text .value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
     
 </style>
 @endpush
@@ -83,8 +95,8 @@
         <div class="max-w-6xl mx-auto text-center">
             {{-- Bagian Judul & Subjudul --}}
             <div class="mb-10">
-                <h2 class="text-3xl font-extrabold text-slate-800 leading-tight">
-                    Ringkasan Statistik Layanan <br>
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-800">
+                    Ringkasan Statistik <br>
                     <span class="">Unit Layanan Terpadu</span> <br>
                     Balai Bahasa Provinsi Jambi
                 </h2>
@@ -102,69 +114,42 @@
                 {{-- KOTAK 1: Indeks Kepuasan Masyarakat (Statis) --}}
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
-                        Indeks Kepuasan Masyarakat
-                    </h4>
-                    <div class="flex items-center justify-center gap-2">
-                        <span class="text-2xl  ">
-                            {{ number_format($ikmScore, 2, ',', '.') }}
-                        </span>
+                    <div class="stat-text">
+                        <div class="title">Indeks Kepuasan Masyarakat</div>
+                        <div class="value">{{ number_format($ikmScore, 2, ',', '.') }}</div>
                     </div>
                 </div>
 
                 {{-- KOTAK 2: Kategori Mutu Pelayanan (Statis) --}}
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
-                        Rata-Rata IKM
-                    </h4>
-                    <div class="flex items-center justify-center gap-2">
-                        {{-- Menggunakan teks lebih kecil (text-2xl) karena isinya huruf, bukan angka --}}
-                        <span class="text-2xl ">
-                            {{ number_format($jumlahNRRTertimbang, 2, ',', '.') }}
-                        </span>
+                    <div class="stat-text">
+                        <div class="title">Rata-Rata IKM</div>
+                        <div class="value">{{ number_format($jumlahNRRTertimbang, 2, ',', '.') }}</div>
                     </div>
                 </div>
 
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
-                        Kategori Mutu Pelayanan
-                    </h4>
-                    <div class="flex items-center justify-center gap-2">
-                        {{-- Menggunakan teks lebih kecil (text-2xl) karena isinya huruf, bukan angka --}}
-                        <span class="text-2xl ">
-                            {{ $ikmMutu }}
-                        </span>
+                    <div class="stat-text">
+                        <div class="title">Kategori Mutu Pelayanan</div>
+                        <div class="value">{{ $ikmMutu }}</div>
                     </div>
                 </div>
                 @foreach($statistik as $stat)
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
-                        {{ $stat['label'] }}
-                    </h4>
-                    <div class="flex items-center justify-center gap-2">
-                        <span class="text-2xl {{ $stat['color'] }}">
-                            {{ $stat['jumlah'] }}
-                        </span>
-                        <span class="text-2xl font-light ">|</span>
-                        <span class="text-2xl ">
-                            {{ $stat['persen'] }}%
-                        </span>
+                    <div class="stat-text">
+                        <div class="title">{{ $stat['label'] }}</div>
+                        <div class="value">{{ $stat['jumlah'] }} | {{ $stat['persen'] }}%</div>
                     </div>
                 </div>
                 @endforeach
                 <div
                     class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 text-center flex flex-col justify-center items-center hover:shadow-md transition-shadow duration-300">
-                    <h4 class="text-lg font-bold text-slate-800 mb-3 tracking-wider">
-                        Layanan Terbanyak
-                    </h4>
-                    <div class="flex flex-col items-center justify-center">
-                        <span class="text-2xl">
-                            {{ $namaLayananPopuler }}
-                        </span>
-
+                    <div class="stat-text">
+                        <div class="title">Layanan Terbanyak</div>
+                        <div class="value">{{ $namaLayananPopuler }}</div>
                     </div>
                 </div>
             </div>
@@ -370,7 +355,7 @@
                 <div class="card p-2">
                     <h2 
                         class="text-left ms-2 mt-1" 
-                        style="font-family: 'Inter', sans-serif; color: #000; font-weight: 600; font-size: 19px;"
+                        style="font-family: 'Inter', sans-serif; color: #000; font-weight: 600; font-size: 17px;"
                     >
                         Hasil Survei Kepuasan Masyarakat
                     </h2>   

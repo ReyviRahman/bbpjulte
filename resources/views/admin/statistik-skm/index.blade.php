@@ -289,6 +289,33 @@
             cursor: pointer;
             color: #374151 !important;
         }
+
+        /* Memaksa background menjadi putih dan teks gelap */
+    .force-light-pagination .dark\:bg-gray-800,
+    .force-light-pagination .dark\:bg-gray-700 {
+        background-color: #ffffff !important;
+    }
+
+    /* Memaksa warna teks kembali ke abu-abu gelap */
+    .force-light-pagination .dark\:text-gray-300,
+    .force-light-pagination .dark\:text-gray-400,
+    .force-light-pagination .dark\:text-gray-600 {
+        color: #374151 !important; /* text-gray-700 */
+    }
+
+    /* Memaksa warna border */
+    .force-light-pagination .dark\:border-gray-600 {
+        border-color: #d1d5db !important; /* border-gray-300 */
+    }
+
+    /* Warna hover dan halaman aktif */
+    .force-light-pagination a:hover {
+        background-color: #f3f4f6 !important; /* hover:bg-gray-100 */
+    }
+    .force-light-pagination span[aria-current="page"] span {
+        background-color: #e5e7eb !important; /* bg-gray-200 */
+        color: #374151 !important;
+    }
     </style>
 @endpush
 
@@ -1286,7 +1313,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card m-4">
+            <div class="card m-4" id="skm-table-container">
                 <div class="flex sm:flex-row flex-col items-center justify-between">
                     <h1 class="text-xl">Daftar Responden</h1>
                 </div>
@@ -1311,10 +1338,10 @@
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="bg-white divide-y divide-gray-200">
-                                @foreach ($skmData as $index => $row)
+                                @foreach ($skmDataPaginate as $index => $row)
                                     <tr class="item-row {{ $loop->odd ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100' }}">
                                         <td class="border-r border-gray-300 px-4 py-2 text-center font-medium">
-                                            {{ $index + 1 }}
+                                            {{ $skmDataPaginate->firstItem() + $index  }}
                                         </td>
                                         <td class="border-r border-gray-300 px-2 py-2 text-center">{{ $row->syarat_pengurusan_pelayanan }}</td>
                                         <td class="border-r border-gray-300 px-2 py-2 text-center">{{ $row->sistem_mekanisme_dan_prosedur_pelayanan }}</td>
@@ -1331,14 +1358,17 @@
                         </table>
                     </div>
                 </div>
+                <div class="mt-4 force-light-pagination">
+                    {{ $skmDataPaginate->withQueryString()->links() }}
+                </div>
 
-                <div class="mt-4 flex sm:flex-row flex-col justify-between items-center">
+                {{-- <div class="mt-4 flex sm:flex-row flex-col justify-between items-center">
                     <span class="text-sm text-gray-600">
                         Menampilkan <span id="start-index">0</span> sampai <span id="end-index">0</span> dari <span id="total-rows">0</span> data
                     </span>
                     <div id="pagination-controls" class="flex space-x-1">
                         </div>
-                </div>
+                </div> --}}
             </div>
 
         </div>
@@ -1351,9 +1381,9 @@
 @push('scripts')
     {{-- Import library dari CDN --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-        
         const mapNamaUnsur = @json($namaUnsur);
 
         function toggleDropdown() {
@@ -1386,6 +1416,49 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Ganti penargetan ke elemen <a> di dalam <nav> pagination Laravel
+    $(document).on('click', '#skm-table-container nav a', function(event) {
+        event.preventDefault(); // Stop halaman refresh
+        
+        let url = $(this).attr('href');
+        
+        // Buat tabel agak transparan sebagai indikator loading
+        $('#skm-table-container').css('opacity', '0.5');
+
+        fetchData(url);
+    });
+
+    function fetchData(url) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                // Cari isi dari #skm-table-container di respon server
+                let newTableContent = $(data).find('#skm-table-container').html();
+                
+                // Jika pakai jQuery untuk membedah full HTML agak bermasalah, kita pakai trik DOMParser yang lebih kebal
+                if (!newTableContent) {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(data, 'text/html');
+                    newTableContent = doc.getElementById('skm-table-container').innerHTML;
+                }
+
+                // Ganti isi HTML container lama dengan yang baru
+                $('#skm-table-container').html(newTableContent);
+                
+                // Kembalikan opacity tabel ke normal
+                $('#skm-table-container').css('opacity', '1');
+                
+                // Update URL di address bar browser
+                window.history.pushState({}, "", url);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);
+                $('#skm-table-container').css('opacity', '1');
+                alert('Gagal memuat data halaman.');
+            }
+        });
+    }
             // 1. Ambil elemen tombol dan panel
             const settingsBtn = document.getElementById("settingsIconBtn");
             const controlsPanel = document.getElementById("controlsPanel");
@@ -2982,115 +3055,7 @@
 
             const chartPeringkatLayanan = new ApexCharts(document.querySelector("#donutChartPeringkat"), optionsPeringkatLayanan);
             chartPeringkatLayanan.render();
-
-            // --- SETUP VARIABEL UTAMA ---
-        const tableBody = document.getElementById('table-body');
-        const rows = tableBody.getElementsByTagName('tr');
-        const paginationControls = document.getElementById('pagination-controls');
-        
-        const totalRows = rows.length;
-        let currentPage = 1;
-        
-        // Default rows per page diambil dari nilai awal Select (misal 10)
-        let rowsPerPage = 10;
-        let totalPages = Math.ceil(totalRows / rowsPerPage);
-
-        // Update Text Info
-        const startIndexText = document.getElementById('start-index');
-        const endIndexText = document.getElementById('end-index');
-        const totalRowsText = document.getElementById('total-rows');
-        
-        totalRowsText.innerText = totalRows;
-
-        // --- FUNGSI TAMPILKAN BARIS ---
-        function displayRows(page) {
-            const start = (page - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-
-            // Sembunyikan semua baris
-            for (let i = 0; i < rows.length; i++) {
-                rows[i].style.display = 'none';
-            }
-
-            // Tampilkan baris yang sesuai range
-            let displayedCount = 0;
-            for (let i = start; i < end && i < rows.length; i++) {
-                rows[i].style.display = '';
-                displayedCount++;
-            }
-
-            // Update info text
-            startIndexText.innerText = totalRows === 0 ? 0 : start + 1;
-            endIndexText.innerText = start + displayedCount;
-        }
-
-        // --- FUNGSI BUAT TOMBOL PAGINATION ---
-        function setupPagination() {
-            paginationControls.innerHTML = '';
-
-            // Jika "Tampilkan Semua" dipilih (totalPages = 1), sembunyikan tombol navigasi
-            if (totalPages <= 1) return; 
-
-            // Tombol Previous (SVG)
-            const prevBtn = document.createElement('button');
-            prevBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="currentColor" d="m4 10l9 9l1.4-1.5L7 10l7.4-7.5L13 1z"/></svg>`;
-            prevBtn.className = `px-2 py-1 border rounded text-sm flex items-center justify-center ${currentPage === 1 ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'bg-white text-gray-600 hover:bg-gray-100'}`;
-            prevBtn.disabled = currentPage === 1;
-            prevBtn.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    changePage(currentPage);
-                }
-            });
-            paginationControls.appendChild(prevBtn);
-
-            // Tombol Angka Halaman
-            let startPage = Math.max(1, currentPage - 1);
-            let endPage = Math.min(totalPages, currentPage + 1);
-
-            // Koreksi jika halaman di awal atau akhir
-            if (endPage - startPage < 2) { 
-                if (startPage === 1) {
-                    endPage = Math.min(3, totalPages);
-                } else if (endPage === totalPages) {
-                    startPage = Math.max(1, totalPages - 2);
-                }
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                const btn = document.createElement('button');
-                btn.innerText = i;
-                btn.className = `px-3 py-1 border rounded text-sm ${i === currentPage ? 'bg-[#6366f1] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`;
-                btn.addEventListener('click', () => {
-                    currentPage = i;
-                    changePage(currentPage);
-                });
-                paginationControls.appendChild(btn);
-            }
-
-            // Tombol Next (SVG)
-            const nextBtn = document.createElement('button');
-            nextBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="currentColor" d="M7 1L5.6 2.5L13 10l-7.4 7.5L7 19l9-9z"/></svg>`;
-            nextBtn.className = `px-2 py-1 border rounded text-sm flex items-center justify-center ${currentPage === totalPages ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'bg-white text-gray-600 hover:bg-gray-100'}`;
-            nextBtn.disabled = currentPage === totalPages;
-            nextBtn.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    changePage(currentPage);
-                }
-            });
-            paginationControls.appendChild(nextBtn);
-        }
-
-        // --- FUNGSI GANTI HALAMAN ---
-        function changePage(page) {
-            displayRows(page);
-            setupPagination();
-        }
-
-        // --- INISIALISASI AWAL ---
-        displayRows(currentPage);
-        setupPagination();
-                    });
+            
+    });
     </script>
 @endpush
